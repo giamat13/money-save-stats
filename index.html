@@ -1062,7 +1062,7 @@ onAuthStateChanged(auth, async (u) => {
 
   const snap=await getDoc(userDoc(u.uid));
   if(!snap.exists()){
-    me={uid:u.uid,email:(u.email||'').toLowerCase(),name:u.displayName||u.email,role:'parent',parentUids:[],children:[]};
+    me={uid:u.uid,email:(u.email||'').toLowerCase(),name:u.displayName||u.email,role:selectedRole||'parent',parentUids:[],children:[]};
     await setDoc(userDoc(u.uid),me,{merge:true});
   } else {
     me={uid:u.uid,...snap.data()};
