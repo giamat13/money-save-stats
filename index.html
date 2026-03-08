@@ -512,7 +512,7 @@ function toast(msg, type='ok'){
   el.textContent=msg; el.className='show '+type;
   setTimeout(()=>el.className='',2600);
 }
-function showScreen(id){
+window.showScreen = function(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   const s=document.getElementById(id);
   if(s) s.classList.add('active');
