@@ -232,6 +232,28 @@ tr:hover td{background:rgba(240,180,41,.025);}
   </div>
 </div>
 
+<!-- ══ INITIAL BALANCE ══ -->
+<div class="screen" id="s-initial-balance">
+  <div class="card">
+    <div class="logo">💰</div>
+    <h1>הון הראשוני שלך</h1>
+    <p class="sub">כמה כסף יש לך כרגע?<br>תוכל לדלג אם תרצה, זה יופיע רק פעם אחת.</p>
+    <div class="form-stack">
+      <div>
+        <div class="form-label" style="font-size:.78rem;color:var(--muted);font-weight:600;margin-bottom:8px">כסף בארנק (₪)</div>
+        <input type="number" id="init-wallet" placeholder="0.00" step="0.01" min="0" />
+      </div>
+      <div>
+        <div class="form-label" style="font-size:.78rem;color:var(--muted);font-weight:600;margin-bottom:8px">כסף בבנק (₪)</div>
+        <input type="number" id="init-bank" placeholder="0.00" step="0.01" min="0" />
+      </div>
+      <div class="err" id="init-err"></div>
+      <button class="btn btn-gold btn-full" onclick="saveInitialBalance()">התחל לעקוב ←</button>
+      <button class="btn btn-ghost btn-full" onclick="skipInitialBalance()">תדלג (אתחיל מ-₪0)</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ MAIN APP ══ -->
 <div id="app" style="display:none">
   <nav>
@@ -458,7 +480,7 @@ tr:hover td{background:rgba(240,180,41,.025);}
 <div class="modal-overlay" id="add-parent-modal">
   <div class="modal">
     <h2>👨‍👩‍👧 הוסף הורה</h2>
-    <p style="color:var(--muted);font-size:.88rem;margin-bottom:16px">הכנס את האימייל של ההורה. הם יקבלו בקשת חיבור לאישור. ניתן לחבר כמה הורים שתרצה.</p>
+    <p style="color:var(--muted);font-size:.88rem;margin-bottom:16px">הכנס את האימייל של ההורה. הם יקבלו בקשת חיבור לאישור.</p>
     <div class="form-group">
       <label class="form-label">אימייל הורה</label>
       <input type="email" id="add-parent-email" placeholder="אימייל ההורה" />
@@ -632,59 +654,16 @@ window.doPasswordReset = async () => {
 };
 
 // ── Settings modal ──
-window.showSettingsModal = async () => {
+window.showSettingsModal = () => {
   const addParentSetting = document.getElementById('add-parent-setting');
   if(me?.role === 'child') {
     addParentSetting.style.display = 'block';
-    await renderConnectedParents();
+    const display = document.getElementById('connected-parents-display');
+    display.textContent = me.parentUids?.length ? `מחובר ל-${me.parentUids.length} הורה/ים` : 'אין הורים מחוברים';
   } else {
     addParentSetting.style.display = 'none';
   }
   document.getElementById('settings-modal').classList.add('open');
-};
-
-async function renderConnectedParents() {
-  const list = document.getElementById('connected-parents-list');
-  if(!me.parentUids?.length) {
-    list.innerHTML = '<div style="font-size:.82rem;color:var(--muted);padding:4px 0">אין הורים מחוברים</div>';
-    return;
-  }
-  // Fetch parent names
-  const items = await Promise.all(me.parentUids.map(async puid => {
-    try {
-      const snap = await getDoc(userDoc(puid));
-      const name = snap.exists() ? snap.data().name || snap.data().email : 'הורה';
-      return {puid, name};
-    } catch(e) { return {puid, name: 'הורה'}; }
-  }));
-  list.innerHTML = items.map(({puid, name}) =>
-    `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">
-      <div style="font-size:.85rem;font-weight:600">${name}</div>
-      <button class="btn btn-red btn-sm" onclick="disconnectParent('${puid}','${name}')">התנתק</button>
-    </div>`
-  ).join('');
-}
-
-window.disconnectParent = async (puid, pname) => {
-  if(!confirm(`התנתק מ-${pname}?`)) return;
-  try {
-    // Remove child from parent's children list
-    try {
-      const pSnap = await getDoc(userDoc(puid));
-      if(pSnap.exists()) {
-        const newCh = (pSnap.data().children||[]).filter(c=>c.uid!==me.uid);
-        await updateDoc(userDoc(puid), {children: newCh});
-      }
-    } catch(e){}
-    // Remove parent from child's list
-    const newPids = me.parentUids.filter(p=>p!==puid);
-    await updateDoc(userDoc(me.uid), {parentUids: newPids});
-    me.parentUids = newPids;
-    toast(`התנתקת מ-${pname} ✓`);
-    await renderConnectedParents();
-  } catch(e) {
-    toast('שגיאה בהתנתקות','fail'); console.error(e);
-  }
 };
 
 window.showAddParentModal = () => {
@@ -760,6 +739,87 @@ window.confirmDeleteAccount = async () => {
   } catch(e){
     toast('שגיאה במחיקה — נסה להתחבר מחדש ואז מחק','fail');
     console.error(e);
+  }
+};
+
+// ── Initial balance ──
+window.saveInitialBalance = async () => {
+  const walletVal = parseFloat(document.getElementById('init-wallet').value) || 0;
+  const bankVal   = parseFloat(document.getElementById('init-bank').value)   || 0;
+  const today = new Date().toISOString().split('T')[0];
+  try {
+    if(walletVal > 0) {
+      await addDoc(userCol(me.uid, 'transactions'), {
+        type: 'איזון ארנק', amount: walletVal,
+        desc: 'הון ראשוני', cat: 'פתיחת חשבון',
+        date: today, createdAt: serverTimestamp(), isInitial: true
+      });
+    }
+    if(bankVal > 0) {
+      await addDoc(userCol(me.uid, 'transactions'), {
+        type: 'הכנסת בנק', amount: bankVal,
+        desc: 'הון ראשוני — בנק', cat: 'פתיחת חשבון',
+        date: today, createdAt: serverTimestamp(), isInitial: true
+      });
+    }
+    await updateDoc(userDoc(me.uid), {initialBalanceDone: true});
+    me.initialBalanceDone = true;
+    await launchApp();
+  } catch(e) {
+    document.getElementById('init-err').textContent = 'שגיאה — נסה שוב';
+    console.error(e);
+  }
+};
+
+window.skipInitialBalance = async () => {
+  await updateDoc(userDoc(me.uid), {initialBalanceDone: true});
+  me.initialBalanceDone = true;
+  await launchApp();
+};
+
+// ── Send link request (child → parent) ──
+window.sendLinkRequest = async () => {
+  const parentEmail=document.getElementById('parent-email-input').value.trim().toLowerCase();
+  const err=document.getElementById('link-err');
+  err.textContent='';
+  if(!parentEmail){err.textContent='הכנס אימייל הורה';return;}
+  if(parentEmail===me.email){err.textContent='לא יכול להיות ההורה של עצמך 😅';return;}
+
+
+  const q=query(collection(db,'users'),where('email','==',parentEmail),where('role','==','parent'));
+  const snap=await getDocs(q);
+  if(snap.empty){err.textContent='לא נמצא הורה עם האימייל הזה';return;}
+  const parentUid=snap.docs[0].id;
+
+  // Check duplicate
+  if(me.parentUids?.includes(parentUid)){err.textContent='כבר מחובר להורה הזה';return;}
+
+  // Check existing pending
+  const reqQ=query(collection(db,'connectionRequests'),
+    where('childUid','==',me.uid),where('parentUid','==',parentUid),where('status','==','pending'));
+  const existSnap=await getDocs(reqQ);
+  if(!existSnap.empty){
+    document.getElementById('waiting-msg').textContent=`בקשה כבר נשלחה ל-${parentEmail}. ממתין לאישור...`;
+    window.showScreen('s-waiting'); return;
+  }
+
+  await addDoc(collection(db,'connectionRequests'),{
+    childUid:me.uid,childName:me.name,childEmail:me.email,
+    parentUid,parentEmail,status:'pending',createdAt:serverTimestamp()
+  });
+  document.getElementById('waiting-msg').textContent=`בקשה נשלחה ל-${parentEmail}. ממתין לאישור...`;
+  window.showScreen('s-waiting');
+};
+
+// ── Check approval ──
+window.checkApproval = async () => {
+  const d=await getDoc(userDoc(me.uid));
+  const data=d.data();
+  if(data.parentUids?.length>0){
+    me={...me,...data};
+    launchApp();
+  } else {
+    toast('עדיין לא אושרת ⏳','info');
   }
 };
 
@@ -890,6 +950,15 @@ window.launchApp = async () => {
       },100);
     }
   } else {
+    // Child — show initial balance screen if first time
+    if(!me.initialBalanceDone) {
+      const txSnap = await getDocs(userCol(me.uid, 'transactions'));
+      if(txSnap.empty) {
+        window.showScreen('s-initial-balance');
+        document.getElementById('app').style.display='none';
+        return;
+      }
+    }
     // Child — view own account
     document.getElementById('viewing-banner').style.display='none';
     document.getElementById('add-tx-panel').style.display='block';
