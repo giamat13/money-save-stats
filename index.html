@@ -15,24 +15,20 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 
-/* ── SCREENS ── */
 .screen{display:none;align-items:center;justify-content:center;min-height:100vh;
   background:radial-gradient(ellipse 80% 60% at 50% -10%,#112244 0%,var(--bg) 70%);}
 .screen.active{display:flex;}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:24px;
-  padding:44px 40px;max-width:420px;width:92%;box-shadow:0 40px 80px rgba(0,0,0,.6);}
-.card-wide{max-width:520px;}
+  padding:44px 40px;max-width:440px;width:92%;box-shadow:0 40px 80px rgba(0,0,0,.6);}
 .logo{text-align:center;font-size:3rem;margin-bottom:10px;}
 .card h1{text-align:center;font-size:1.7rem;font-weight:900;margin-bottom:4px;}
-.card .sub{text-align:center;color:var(--muted);font-size:.88rem;margin-bottom:28px;line-height:1.5;}
+.card .sub{text-align:center;color:var(--muted);font-size:.88rem;margin-bottom:28px;line-height:1.6;}
 
-/* ── TABS ── */
 .tabs{display:flex;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:24px;}
 .tab{flex:1;padding:9px;text-align:center;font-size:.88rem;font-weight:700;
   cursor:pointer;border-radius:7px;color:var(--muted);transition:.2s;user-select:none;}
 .tab.active{background:var(--gold);color:#000;}
 
-/* ── ROLE CARDS ── */
 .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
 .role-card{border:2px solid var(--border);border-radius:14px;padding:20px 12px;
   text-align:center;cursor:pointer;transition:.2s;}
@@ -42,7 +38,6 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 .role-card .role-name{font-weight:700;font-size:.95rem;}
 .role-card .role-desc{font-size:.75rem;color:var(--muted);margin-top:3px;}
 
-/* ── FORMS ── */
 .form-stack{display:flex;flex-direction:column;gap:12px;}
 input,select{background:var(--bg);border:1px solid var(--border);border-radius:10px;
   padding:12px 15px;color:var(--text);font-family:'Heebo',sans-serif;font-size:.9rem;
@@ -51,11 +46,11 @@ input:focus,select:focus{border-color:var(--gold);}
 input::placeholder{color:var(--muted);}
 select option{background:var(--surface2);}
 .err{color:var(--red);font-size:.82rem;text-align:center;min-height:18px;}
+.info-msg{color:var(--blue);font-size:.82rem;text-align:center;}
 
-/* ── BUTTONS ── */
 .btn{padding:11px 18px;border-radius:10px;font-family:'Heebo',sans-serif;font-weight:700;
   font-size:.9rem;cursor:pointer;border:none;transition:all .2s;
-  display:inline-flex;align-items:center;gap:7px;}
+  display:inline-flex;align-items:center;gap:7px;justify-content:center;}
 .btn-gold{background:var(--gold);color:#000;}
 .btn-gold:hover{background:#e0a820;transform:translateY(-1px);box-shadow:0 6px 20px rgba(240,180,41,.3);}
 .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}
@@ -64,44 +59,37 @@ select option{background:var(--surface2);}
 .btn-green:hover{background:rgba(16,185,129,.3);}
 .btn-red{background:rgba(244,63,94,.15);color:var(--red);border:1px solid rgba(244,63,94,.3);}
 .btn-red:hover{background:rgba(244,63,94,.25);}
-.btn-full{width:100%;justify-content:center;}
+.btn-blue{background:rgba(56,189,248,.15);color:var(--blue);border:1px solid rgba(56,189,248,.3);}
+.btn-full{width:100%;}
 .btn-sm{padding:6px 12px;font-size:.8rem;}
 
-/* ── WAITING SCREEN ── */
-.waiting-icon{font-size:4rem;text-align:center;margin-bottom:16px;
-  animation:pulse 2s ease-in-out infinite;}
+.waiting-icon{font-size:4rem;text-align:center;margin-bottom:16px;animation:pulse 2s ease-in-out infinite;}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.05)}}
 
-/* ── NAV ── */
 nav{position:sticky;top:0;z-index:100;background:rgba(8,12,22,.92);
   backdrop-filter:blur(20px);border-bottom:1px solid var(--border);
-  padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+  padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;}
 .nav-brand{font-weight:900;font-size:1.1rem;display:flex;align-items:center;gap:9px;}
-.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .nav-user{color:var(--muted);font-size:.82rem;}
-.child-switcher{display:flex;gap:6px;align-items:center;}
 .child-btn{padding:5px 12px;border-radius:20px;font-size:.78rem;font-weight:600;
   cursor:pointer;border:1px solid var(--border);background:transparent;
   color:var(--muted);font-family:'Heebo',sans-serif;transition:.15s;}
 .child-btn.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
 
-/* ── CONTAINER ── */
 .container{max-width:1080px;margin:0 auto;padding:24px 20px;}
 
-/* ── BANNER ── */
-.banner{border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;
+.banner{border-radius:var(--radius);padding:14px 18px;margin-bottom:18px;
   display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
 .banner-orange{background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.3);}
 .banner-blue{background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);}
-.banner-title{font-weight:700;font-size:.9rem;}
-.banner-sub{font-size:.8rem;color:var(--muted);margin-top:2px;}
+.banner-title{font-weight:700;font-size:.88rem;}
+.banner-sub{font-size:.78rem;color:var(--muted);margin-top:2px;}
 
-/* ── REQUESTS ── */
 .req-item{display:flex;align-items:center;justify-content:space-between;gap:12px;
   padding:14px 0;border-bottom:1px solid var(--border);}
 .req-item:last-child{border-bottom:none;}
 
-/* ── STATS ── */
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:22px;}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
   padding:20px 18px;position:relative;overflow:hidden;transition:.2s;}
@@ -112,26 +100,22 @@ nav{position:sticky;top:0;z-index:100;background:rgba(8,12,22,.92);
 .stat-val{font-size:1.5rem;font-weight:900;font-family:'Space Mono',monospace;}
 .stat-sub{font-size:.72rem;color:var(--muted);margin-top:3px;}
 
-/* ── MAIN GRID ── */
 .main-grid{display:grid;grid-template-columns:1fr 350px;gap:18px;align-items:start;}
 @media(max-width:800px){.main-grid{grid-template-columns:1fr;}}
 
-/* ── SECTION ── */
 .section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:18px;}
 .section-hd{padding:16px 20px;border-bottom:1px solid var(--border);
   display:flex;justify-content:space-between;align-items:center;}
 .section-title{font-weight:700;font-size:.95rem;}
 
-/* ── FILTERS ── */
 .filters{display:flex;gap:7px;flex-wrap:wrap;padding:12px 20px;border-bottom:1px solid var(--border);}
 .filter-btn{padding:4px 11px;border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer;
   border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Heebo',sans-serif;transition:.15s;}
 .filter-btn.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
 
-/* ── TABLE ── */
 table{width:100%;border-collapse:collapse;}
 th{padding:10px 14px;text-align:right;font-size:.72rem;font-weight:700;color:var(--muted);
-  text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border);background:var(--bg);}
+  text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--bg);}
 td{padding:10px 14px;font-size:.85rem;border-bottom:1px solid rgba(30,45,69,.5);}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:rgba(240,180,41,.025);}
@@ -148,7 +132,6 @@ tr:hover td{background:rgba(240,180,41,.025);}
 .a-allow{color:var(--orange);font-weight:700;font-family:'Space Mono',monospace;font-size:.8rem;}
 .empty{text-align:center;padding:40px;color:var(--muted);}
 
-/* ── SIDEBAR ── */
 .sidebar{display:flex;flex-direction:column;gap:16px;}
 .form-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
 .form-title{font-weight:700;font-size:.9rem;margin-bottom:16px;display:flex;align-items:center;gap:7px;}
@@ -159,24 +142,16 @@ tr:hover td{background:rgba(240,180,41,.025);}
 .goal-bar{height:5px;background:var(--bg);border-radius:100px;overflow:hidden;margin:5px 0;}
 .goal-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--blue),var(--purple));transition:.6s;}
 
-/* ── CHART ── */
-#chart-area{padding:18px;}
+.allowance-card{background:rgba(251,146,60,.07);border:1px solid rgba(251,146,60,.25);border-radius:var(--radius);padding:18px;}
 
-/* ── ALLOWANCE CARD ── */
-.allowance-card{background:rgba(251,146,60,.07);border:1px solid rgba(251,146,60,.25);
-  border-radius:var(--radius);padding:18px;}
-.allowance-card .form-label{color:var(--orange);}
-
-/* ── MODAL ── */
 .modal-overlay{display:none;position:fixed;inset:0;z-index:200;
-  background:rgba(0,0,0,.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;}
+  background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:center;justify-content:center;}
 .modal-overlay.open{display:flex;}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;
   padding:30px;max-width:420px;width:92%;box-shadow:0 40px 80px rgba(0,0,0,.5);}
 .modal h2{font-size:1.1rem;font-weight:900;margin-bottom:18px;}
 .modal-actions{display:flex;gap:9px;margin-top:18px;}
 
-/* ── LOADER / TOAST ── */
 .loader{text-align:center;padding:36px;color:var(--muted);}
 .spinner{width:26px;height:26px;border:3px solid var(--border);border-top-color:var(--gold);
   border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 8px;}
@@ -188,11 +163,16 @@ tr:hover td{background:rgba(240,180,41,.025);}
 #toast.ok{border-color:var(--green);color:var(--green);}
 #toast.fail{border-color:var(--red);color:var(--red);}
 #toast.info{border-color:var(--orange);color:var(--orange);}
+
+.no-children{text-align:center;padding:60px 20px;color:var(--muted);}
+.no-children .icon{font-size:3rem;margin-bottom:16px;}
+.divider{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:.8rem;margin:4px 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
 </style>
 </head>
 <body>
 
-<!-- ══ SCREEN 1: AUTH ══ -->
+<!-- ══ AUTH ══ -->
 <div class="screen active" id="s-auth">
   <div class="card">
     <div class="logo">💰</div>
@@ -203,20 +183,20 @@ tr:hover td{background:rgba(240,180,41,.025);}
       <div class="tab" id="tab-reg" onclick="switchAuthTab('reg')">הרשמה</div>
     </div>
 
-    <!-- Login form -->
     <div id="login-form" class="form-stack">
       <input type="email" id="l-email" placeholder="אימייל" />
       <input type="password" id="l-pass" placeholder="סיסמה" />
       <div class="err" id="l-err"></div>
       <button class="btn btn-gold btn-full" onclick="doLogin()">התחבר</button>
+      <div class="divider">או</div>
+      <button class="btn btn-ghost btn-full" onclick="showResetModal()">שכחתי סיסמה 🔑</button>
     </div>
 
-    <!-- Register form -->
     <div id="reg-form" class="form-stack" style="display:none">
       <input type="text" id="r-name" placeholder="שם תצוגה" />
       <input type="email" id="r-email" placeholder="אימייל" />
       <input type="password" id="r-pass" placeholder="סיסמה (לפחות 6 תווים)" />
-      <div style="margin:4px 0 2px">
+      <div>
         <div class="form-label" style="font-size:.78rem;color:var(--muted);font-weight:600;margin-bottom:8px">אני:</div>
         <div class="role-grid">
           <div class="role-card selected" id="role-parent" onclick="selectRole('parent')">
@@ -237,44 +217,31 @@ tr:hover td{background:rgba(240,180,41,.025);}
   </div>
 </div>
 
-<!-- ══ SCREEN 2: LINK TO PARENT (child after registration) ══ -->
+<!-- ══ LINK TO PARENT ══ -->
 <div class="screen" id="s-link">
   <div class="card">
     <div class="logo">🔗</div>
     <h1>חיבור להורה</h1>
-    <p class="sub">כדי להתחיל, הכנס את האימייל של ההורה שלך.<br>הוא יצטרך לאשר את הבקשה.</p>
+    <p class="sub">הכנס את האימייל של ההורה שלך.<br>אפשר לחבר עד 2 הורים.</p>
+    <div id="linked-parents-list" style="margin-bottom:16px"></div>
     <div class="form-stack">
-      <input type="email" id="parent-email-input" placeholder="אימייל ההורה" />
+      <input type="email" id="parent-email-input" placeholder="אימייל הורה" />
       <div class="err" id="link-err"></div>
       <button class="btn btn-gold btn-full" onclick="sendLinkRequest()">שלח בקשה</button>
+      <button class="btn btn-ghost btn-full" id="link-continue-btn" style="display:none" onclick="launchApp()">המשך לאפליקציה ←</button>
       <button class="btn btn-ghost btn-full" onclick="doLogout()">התנתק</button>
     </div>
   </div>
 </div>
 
-<!-- ══ SCREEN 3: WAITING FOR APPROVAL ══ -->
+<!-- ══ WAITING ══ -->
 <div class="screen" id="s-waiting">
   <div class="card">
     <div class="waiting-icon">⏳</div>
     <h1>ממתין לאישור</h1>
-    <p class="sub" id="waiting-msg">בקשת החיבור נשלחה להורה שלך.<br>ברגע שיאשר, תוכל להיכנס לאפליקציה.</p>
-    <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px">
+    <p class="sub" id="waiting-msg">בקשת החיבור נשלחה. ממתין לאישור ההורה...</p>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px">
       <button class="btn btn-ghost btn-full" onclick="checkApproval()">🔄 בדוק שוב</button>
-      <button class="btn btn-ghost btn-full" onclick="doLogout()">התנתק</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══ SCREEN 4: PARENT — PENDING REQUESTS ══ -->
-<div class="screen" id="s-requests">
-  <div class="card card-wide">
-    <div class="logo">📬</div>
-    <h1>בקשות חיבור</h1>
-    <p class="sub">ילדים שביקשו להתחבר לחשבון שלך</p>
-    <div id="requests-list">
-      <div class="loader"><div class="spinner"></div></div>
-    </div>
-    <div style="margin-top:20px">
       <button class="btn btn-ghost btn-full" onclick="doLogout()">התנתק</button>
     </div>
   </div>
@@ -283,183 +250,186 @@ tr:hover td{background:rgba(240,180,41,.025);}
 <!-- ══ MAIN APP ══ -->
 <div id="app" style="display:none">
   <nav>
-    <div class="nav-brand">
-      <span>💰</span>
-      <span id="nav-title">הכסף שלי</span>
-    </div>
+    <div class="nav-brand">💰 <span id="nav-title">הכסף שלי</span></div>
     <div class="nav-right">
-      <!-- Parent: child switcher -->
-      <div class="child-switcher" id="child-switcher" style="display:none"></div>
+      <div id="child-switcher" style="display:none;gap:6px;align-items:center;display:flex"></div>
       <div class="nav-user" id="nav-name"></div>
+      <button class="btn btn-ghost btn-sm" onclick="showSettingsModal()">⚙️</button>
       <button class="btn btn-ghost btn-sm" onclick="doLogout()">יציאה</button>
     </div>
   </nav>
 
   <div class="container">
 
-    <!-- Viewing child banner -->
-    <div class="banner banner-blue" id="viewing-banner" style="display:none">
-      <div>
-        <div class="banner-title" id="viewing-name"></div>
-        <div class="banner-sub">אתה צופה בחשבון הילד שלך</div>
-      </div>
-    </div>
-
-    <!-- Pending requests banner (for parent with pending requests) -->
     <div class="banner banner-orange" id="pending-banner" style="display:none">
       <div>
         <div class="banner-title">📬 יש בקשות חיבור ממתינות</div>
         <div class="banner-sub" id="pending-banner-sub"></div>
       </div>
-      <button class="btn btn-sm" style="background:var(--orange);color:#000;border:none" onclick="showScreen('s-requests');loadRequests()">טפל בבקשות</button>
+      <button class="btn btn-sm" style="background:var(--orange);color:#000;border:none" onclick="showRequestsModal()">טפל בבקשות</button>
     </div>
 
-    <!-- STATS -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-glow" style="background:var(--gold)"></div>
-        <div class="stat-label">סה״כ נחסך</div>
-        <div class="stat-val" style="color:var(--gold)" id="s-total">₪0</div>
-        <div class="stat-sub" id="s-since"></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-glow" style="background:var(--green)"></div>
-        <div class="stat-label">בבנק</div>
-        <div class="stat-val" style="color:var(--green)" id="s-bank">₪0</div>
-        <div class="stat-sub">חיסכון בטוח</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-glow" style="background:var(--blue)"></div>
-        <div class="stat-label">בארנק</div>
-        <div class="stat-val" style="color:var(--blue)" id="s-wallet">₪0</div>
-        <div class="stat-sub">מזומן</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-glow" style="background:var(--purple)"></div>
-        <div class="stat-label">חיסכון / חודש</div>
-        <div class="stat-val" style="color:var(--purple)" id="s-monthly">₪0</div>
-        <div class="stat-sub" id="s-yearly"></div>
-      </div>
-    </div>
-
-    <!-- CHART -->
-    <div class="section">
-      <div class="section-hd"><div class="section-title">📊 הכנסות vs הוצאות — 6 חודשים</div></div>
-      <div id="chart-area"><div class="loader"><div class="spinner"></div></div></div>
-    </div>
-
-    <div class="main-grid">
-      <!-- TRANSACTIONS -->
+    <div class="banner banner-blue" id="viewing-banner" style="display:none">
       <div>
-        <div class="section">
-          <div class="section-hd"><div class="section-title">📋 פעולות</div></div>
-          <div class="filters" id="filter-bar">
-            <button class="filter-btn active" onclick="setFilter('all',this)">הכל</button>
-            <button class="filter-btn" onclick="setFilter('הכנסה',this)">הכנסות</button>
-            <button class="filter-btn" onclick="setFilter('הוצאה',this)">הוצאות</button>
-            <button class="filter-btn" onclick="setFilter('הפקדה',this)">הפקדות</button>
-            <button class="filter-btn" onclick="setFilter('דמי כיס',this)">דמי כיס 🧡</button>
-          </div>
-          <div id="tx-wrap"><div class="loader"><div class="spinner"></div></div></div>
+        <div class="banner-title" id="viewing-name"></div>
+        <div class="banner-sub">צופה בחשבון הילד</div>
+      </div>
+    </div>
+
+    <!-- No children state (parent only) -->
+    <div class="no-children" id="no-children-state" style="display:none">
+      <div class="icon">👨‍👩‍👧</div>
+      <div style="font-weight:700;font-size:1.1rem;margin-bottom:8px">אין ילדים מחוברים עדיין</div>
+      <div style="font-size:.88rem;color:var(--muted)">כשילד שלך ישלח בקשת חיבור עם האימייל שלך, תראה אותה כאן.</div>
+    </div>
+
+    <!-- Main content (hidden until child selected) -->
+    <div id="main-content" style="display:none">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-glow" style="background:var(--gold)"></div>
+          <div class="stat-label">סה״כ נחסך</div>
+          <div class="stat-val" style="color:var(--gold)" id="s-total">₪0</div>
+          <div class="stat-sub" id="s-since"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-glow" style="background:var(--green)"></div>
+          <div class="stat-label">בבנק</div>
+          <div class="stat-val" style="color:var(--green)" id="s-bank">₪0</div>
+          <div class="stat-sub">חיסכון בטוח</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-glow" style="background:var(--blue)"></div>
+          <div class="stat-label">בארנק</div>
+          <div class="stat-val" style="color:var(--blue)" id="s-wallet">₪0</div>
+          <div class="stat-sub">מזומן</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-glow" style="background:var(--purple)"></div>
+          <div class="stat-label">חיסכון / חודש</div>
+          <div class="stat-val" style="color:var(--purple)" id="s-monthly">₪0</div>
+          <div class="stat-sub" id="s-yearly"></div>
         </div>
       </div>
 
-      <!-- SIDEBAR -->
-      <div class="sidebar">
+      <div class="section">
+        <div class="section-hd"><div class="section-title">📊 הכנסות vs הוצאות — 6 חודשים</div></div>
+        <div id="chart-area"><div class="loader"><div class="spinner"></div></div></div>
+      </div>
 
-        <!-- ADD TRANSACTION (hidden when viewing child as parent) -->
-        <div class="form-section" id="add-tx-panel">
-          <div class="form-title">➕ פעולה חדשה</div>
-          <div class="form-group">
-            <label class="form-label">סוג פעולה</label>
-            <select id="tx-type">
-              <option value="הכנסה">💚 הכנסה</option>
-              <option value="הוצאה">🔴 הוצאה</option>
-              <option value="הפקדה">🔵 הפקדה לבנק</option>
-              <option value="משיכה">🟣 משיכה מבנק</option>
-              <option value="הכנסת בנק">🏦 הכנסת בנק</option>
-              <option value="הוצאת בנק">🏦 הוצאת בנק</option>
-              <option value="איזון ארנק">⚖️ איזון ארנק</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">סכום (₪)</label>
-            <input type="number" id="tx-amount" placeholder="0.00" step="0.01" min="0" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">תיאור</label>
-            <input type="text" id="tx-desc" placeholder="למה זה?" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">קטגוריה</label>
-            <input type="text" id="tx-cat" placeholder="ספרים, מתנות..." />
-          </div>
-          <div class="form-group">
-            <label class="form-label">תאריך</label>
-            <input type="date" id="tx-date" />
-          </div>
-          <button class="btn btn-gold btn-full" onclick="addTransaction()">שמור פעולה</button>
-        </div>
-
-        <!-- ALLOWANCE (parent viewing child) -->
-        <div class="allowance-card" id="allowance-panel" style="display:none">
-          <div class="form-title" style="color:var(--orange)">🧡 דמי כיס שבועיים</div>
-          <div class="form-group">
-            <label class="form-label">סכום שבועי (₪)</label>
-            <input type="number" id="allow-amount" placeholder="0" step="0.5" min="0" style="margin-bottom:0" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">יום בשבוע</label>
-            <select id="allow-day">
-              <option value="0">ראשון</option>
-              <option value="5">שישי</option>
-              <option value="6">שבת</option>
-              <option value="1">שני</option>
-              <option value="2">שלישי</option>
-              <option value="3">רביעי</option>
-              <option value="4">חמישי</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">תיאור בפעולה</label>
-            <input type="text" id="allow-desc" placeholder="דמי כיס שבועיים" />
-          </div>
-          <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
-            <input type="checkbox" id="allow-enabled" style="width:auto;direction:ltr" />
-            <label for="allow-enabled" style="font-size:.85rem;cursor:pointer">פעיל</label>
-          </div>
-          <button class="btn btn-full" style="background:var(--orange);color:#000;border:none" onclick="saveAllowance()">שמור הגדרות</button>
-          <div style="font-size:.75rem;color:var(--muted);margin-top:10px;text-align:center" id="allow-status"></div>
-        </div>
-
-        <!-- GOALS -->
-        <div class="form-section">
-          <div class="form-title" style="justify-content:space-between">
-            <span>🎯 יעדי חיסכון</span>
-            <button class="btn btn-ghost btn-sm" id="add-goal-btn" onclick="document.getElementById('goal-modal').classList.add('open')">+ יעד</button>
-          </div>
-          <div id="goals-list">
-            <div class="loader" style="padding:10px"><div class="spinner" style="width:18px;height:18px;margin-bottom:4px"></div></div>
+      <div class="main-grid">
+        <div>
+          <div class="section">
+            <div class="section-hd"><div class="section-title">📋 פעולות</div></div>
+            <div class="filters">
+              <button class="filter-btn active" onclick="setFilter('all',this)">הכל</button>
+              <button class="filter-btn" onclick="setFilter('הכנסה',this)">הכנסות</button>
+              <button class="filter-btn" onclick="setFilter('הוצאה',this)">הוצאות</button>
+              <button class="filter-btn" onclick="setFilter('הפקדה',this)">הפקדות</button>
+              <button class="filter-btn" onclick="setFilter('דמי כיס',this)">דמי כיס 🧡</button>
+            </div>
+            <div id="tx-wrap"><div class="loader"><div class="spinner"></div></div></div>
           </div>
         </div>
 
+        <div class="sidebar">
+          <div class="form-section" id="add-tx-panel">
+            <div class="form-title">➕ פעולה חדשה</div>
+            <div class="form-group">
+              <label class="form-label">סוג פעולה</label>
+              <select id="tx-type">
+                <option value="הכנסה">💚 הכנסה</option>
+                <option value="הוצאה">🔴 הוצאה</option>
+                <option value="הפקדה">🔵 הפקדה לבנק</option>
+                <option value="משיכה">🟣 משיכה מבנק</option>
+                <option value="הכנסת בנק">🏦 הכנסת בנק</option>
+                <option value="הוצאת בנק">🏦 הוצאת בנק</option>
+                <option value="איזון ארנק">⚖️ איזון ארנק</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">סכום (₪)</label>
+              <input type="number" id="tx-amount" placeholder="0.00" step="0.01" min="0" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">תיאור</label>
+              <input type="text" id="tx-desc" placeholder="למה זה?" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">קטגוריה</label>
+              <input type="text" id="tx-cat" placeholder="ספרים, מתנות..." />
+            </div>
+            <div class="form-group">
+              <label class="form-label">תאריך</label>
+              <input type="date" id="tx-date" />
+            </div>
+            <button class="btn btn-gold btn-full" onclick="addTransaction()">שמור פעולה</button>
+          </div>
+
+          <div class="allowance-card" id="allowance-panel" style="display:none">
+            <div class="form-title" style="color:var(--orange)">🧡 דמי כיס שבועיים</div>
+            <div class="form-group">
+              <label class="form-label">סכום שבועי (₪)</label>
+              <input type="number" id="allow-amount" placeholder="0" step="0.5" min="0" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">יום בשבוע</label>
+              <select id="allow-day">
+                <option value="0">ראשון</option>
+                <option value="5">שישי</option>
+                <option value="6">שבת</option>
+                <option value="1">שני</option>
+                <option value="2">שלישי</option>
+                <option value="3">רביעי</option>
+                <option value="4">חמישי</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">תיאור</label>
+              <input type="text" id="allow-desc" placeholder="דמי כיס שבועיים" />
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+              <input type="checkbox" id="allow-enabled" style="width:auto;direction:ltr" />
+              <label for="allow-enabled" style="font-size:.85rem;cursor:pointer">פעיל</label>
+            </div>
+            <button class="btn btn-full" style="background:var(--orange);color:#000;border:none" onclick="saveAllowance()">שמור הגדרות</button>
+            <div style="font-size:.74rem;color:var(--muted);margin-top:8px;text-align:center" id="allow-status"></div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-title" style="justify-content:space-between">
+              <span>🎯 יעדי חיסכון</span>
+              <button class="btn btn-ghost btn-sm" id="add-goal-btn" onclick="document.getElementById('goal-modal').classList.add('open')">+ יעד</button>
+            </div>
+            <div id="goals-list">
+              <div class="loader" style="padding:10px"><div class="spinner" style="width:18px;height:18px;margin-bottom:4px"></div></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- GOAL MODAL -->
+<!-- ══ MODALS ══ -->
+
+<!-- Requests modal -->
+<div class="modal-overlay" id="requests-modal">
+  <div class="modal">
+    <h2>📬 בקשות חיבור ממתינות</h2>
+    <div id="requests-list"><div class="loader"><div class="spinner"></div></div></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="document.getElementById('requests-modal').classList.remove('open')">סגור</button>
+    </div>
+  </div>
+</div>
+
+<!-- Goal modal -->
 <div class="modal-overlay" id="goal-modal">
   <div class="modal">
     <h2>🎯 יעד חיסכון חדש</h2>
-    <div class="form-group">
-      <label class="form-label">שם היעד</label>
-      <input type="text" id="g-name" placeholder="אייפון, נסיעה, ספר..." />
-    </div>
-    <div class="form-group">
-      <label class="form-label">כמה עולה? (₪)</label>
-      <input type="number" id="g-target" placeholder="0" />
-    </div>
+    <div class="form-group"><label class="form-label">שם היעד</label><input type="text" id="g-name" placeholder="אייפון, נסיעה..." /></div>
+    <div class="form-group"><label class="form-label">כמה עולה? (₪)</label><input type="number" id="g-target" placeholder="0" /></div>
     <div class="modal-actions">
       <button class="btn btn-gold" onclick="saveGoal()">שמור</button>
       <button class="btn btn-ghost" onclick="document.getElementById('goal-modal').classList.remove('open')">ביטול</button>
@@ -467,23 +437,53 @@ tr:hover td{background:rgba(240,180,41,.025);}
   </div>
 </div>
 
+<!-- Settings modal -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal">
+    <h2>⚙️ הגדרות</h2>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-blue btn-full" onclick="showResetModal();document.getElementById('settings-modal').classList.remove('open')">🔑 שנה סיסמה / אפס סיסמה</button>
+      <button class="btn btn-red btn-full" onclick="confirmDeleteAccount()">🗑️ מחק חשבון לצמיתות</button>
+    </div>
+    <div class="modal-actions" style="margin-top:14px">
+      <button class="btn btn-ghost btn-full" onclick="document.getElementById('settings-modal').classList.remove('open')">סגור</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reset password modal -->
+<div class="modal-overlay" id="reset-modal">
+  <div class="modal">
+    <h2>🔑 איפוס סיסמה</h2>
+    <p style="color:var(--muted);font-size:.88rem;margin-bottom:16px">נשלח לך אימייל עם קישור לאיפוס הסיסמה.</p>
+    <div class="form-group">
+      <label class="form-label">אימייל</label>
+      <input type="email" id="reset-email" placeholder="האימייל שלך" />
+    </div>
+    <div class="err" id="reset-err"></div>
+    <div class="info-msg" id="reset-ok" style="display:none">✓ אימייל נשלח! בדוק את תיבת הדואר שלך.</div>
+    <div class="modal-actions">
+      <button class="btn btn-gold" onclick="doPasswordReset()">שלח אימייל</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('reset-modal').classList.remove('open')">ביטול</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
-<!-- ══════════════════ FIREBASE + APP LOGIC ══════════════════ -->
 <script type="module">
 import { initializeApp }           from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
 import { getAnalytics, logEvent }  from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
 import {
   getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-  signOut, onAuthStateChanged, updateProfile
+  signOut, onAuthStateChanged, updateProfile, sendPasswordResetEmail, deleteUser
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 import {
   getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs,
-  deleteDoc, onSnapshot, query, where, orderBy, serverTimestamp, updateDoc
+  deleteDoc, onSnapshot, query, where, orderBy, serverTimestamp, updateDoc, arrayUnion, writeBatch
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-// ── Init ──
-const fbApp   = initializeApp({
+const fbApp = initializeApp({
   apiKey:"AIzaSyB7CP_JYF37lC7x0YGujBO42PhGsoesk74",
   authDomain:"money-save-stats.firebaseapp.com",
   projectId:"money-save-stats",
@@ -497,9 +497,8 @@ const auth = getAuth(fbApp);
 const db   = getFirestore(fbApp);
 
 // ── State ──
-let me = null;          // { uid, email, displayName, role, parentUid, children:[] }
-let viewUid = null;     // which user's data we're viewing (self or child)
-let viewName = '';
+let me = null;
+let viewUid = null;
 let transactions = [], goals = [];
 let activeFilter = 'all';
 let unsubTx = null, unsubGoals = null;
@@ -512,37 +511,36 @@ function toast(msg, type='ok'){
   el.textContent=msg; el.className='show '+type;
   setTimeout(()=>el.className='',2600);
 }
-window.showScreen = function(id){
+window.showScreen = (id) => {
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   const s=document.getElementById(id);
   if(s) s.classList.add('active');
   document.getElementById('app').style.display='none';
-  if(id==='app-main'){document.getElementById('app').style.display='block'; return;}
-}
-const userDoc  = uid => doc(db,`users/${uid}`);
-const userCol  = (uid,sub) => collection(db,`users/${uid}/${sub}`);
+};
+const userDoc = uid => doc(db,`users/${uid}`);
+const userCol = (uid,sub) => collection(db,`users/${uid}/${sub}`);
 
-// ── Role selection ──
+// ── Role ──
 window.selectRole = (r) => {
-  selectedRole = r;
-  document.getElementById('role-parent').classList.toggle('selected', r==='parent');
-  document.getElementById('role-child').classList.toggle('selected', r==='child');
+  selectedRole=r;
+  document.getElementById('role-parent').classList.toggle('selected',r==='parent');
+  document.getElementById('role-child').classList.toggle('selected',r==='child');
 };
 
 // ── Auth tabs ──
 window.switchAuthTab = (t) => {
-  const isReg = t==='reg';
+  const isReg=t==='reg';
   document.getElementById('tab-login').classList.toggle('active',!isReg);
   document.getElementById('tab-reg').classList.toggle('active',isReg);
-  document.getElementById('login-form').style.display = isReg?'none':'flex';
-  document.getElementById('reg-form').style.display   = isReg?'flex':'none';
+  document.getElementById('login-form').style.display=isReg?'none':'flex';
+  document.getElementById('reg-form').style.display=isReg?'flex':'none';
 };
 
 // ── Login ──
 window.doLogin = async () => {
   const email=document.getElementById('l-email').value.trim();
-  const pass =document.getElementById('l-pass').value;
-  const err  =document.getElementById('l-err');
+  const pass=document.getElementById('l-pass').value;
+  const err=document.getElementById('l-err');
   err.textContent='';
   if(!email||!pass){err.textContent='מלא אימייל וסיסמה';return;}
   try { await signInWithEmailAndPassword(auth,email,pass); }
@@ -554,18 +552,18 @@ window.doLogin = async () => {
 
 // ── Register ──
 window.doRegister = async () => {
-  const name =document.getElementById('r-name').value.trim();
+  const name=document.getElementById('r-name').value.trim();
   const email=document.getElementById('r-email').value.trim();
-  const pass =document.getElementById('r-pass').value;
-  const err  =document.getElementById('r-err');
+  const pass=document.getElementById('r-pass').value;
+  const err=document.getElementById('r-err');
   err.textContent='';
   if(!name||!email||!pass){err.textContent='מלא את כל השדות';return;}
   try {
-    const cred = await createUserWithEmailAndPassword(auth,email,pass);
+    const cred=await createUserWithEmailAndPassword(auth,email,pass);
     await updateProfile(cred.user,{displayName:name});
     await setDoc(userDoc(cred.user.uid),{
-      uid:cred.user.uid, name, email, role:selectedRole,
-      parentUid:null, children:[], createdAt:serverTimestamp()
+      uid:cred.user.uid,name,email:email.toLowerCase(),role:selectedRole,
+      parentUids:[],children:[],createdAt:serverTimestamp()
     });
     logEvent(analytics,'sign_up',{role:selectedRole});
   } catch(e){
@@ -582,6 +580,75 @@ window.doLogout = async () => {
   await signOut(auth);
 };
 
+// ── Password reset ──
+window.showResetModal = () => {
+  document.getElementById('reset-err').textContent='';
+  document.getElementById('reset-ok').style.display='none';
+  if(me) document.getElementById('reset-email').value=me.email||'';
+  document.getElementById('reset-modal').classList.add('open');
+};
+window.doPasswordReset = async () => {
+  const email=document.getElementById('reset-email').value.trim();
+  const err=document.getElementById('reset-err');
+  err.textContent='';
+  if(!email){err.textContent='הכנס אימייל';return;}
+  try {
+    await sendPasswordResetEmail(auth,email);
+    document.getElementById('reset-ok').style.display='block';
+    toast('אימייל נשלח! ✓');
+  } catch(e){
+    err.textContent='לא הצלחנו לשלוח — בדוק שהאימייל נכון';
+  }
+};
+
+// ── Settings modal ──
+window.showSettingsModal = () => {
+  document.getElementById('settings-modal').classList.add('open');
+};
+
+// ── Delete account ──
+window.confirmDeleteAccount = async () => {
+  document.getElementById('settings-modal').classList.remove('open');
+  const confirmed=confirm(`⚠️ מחיקת חשבון לצמיתות\n\nכל הנתונים שלך יימחקו ולא ניתן יהיה לשחזר אותם.\nהאם אתה בטוח?`);
+  if(!confirmed) return;
+  try {
+    const uid=me.uid;
+    // Delete subcollections
+    for(const sub of ['transactions','goals']){
+      const snap=await getDocs(userCol(uid,sub));
+      const batch=writeBatch(db);
+      snap.docs.forEach(d=>batch.delete(d.ref));
+      await batch.commit();
+    }
+    // Delete settings
+    try {
+      const settSnap=await getDocs(collection(db,`users/${uid}/settings`));
+      const batch=writeBatch(db);
+      settSnap.docs.forEach(d=>batch.delete(d.ref));
+      await batch.commit();
+    } catch(e){}
+    // Delete user doc
+    await deleteDoc(userDoc(uid));
+    // Remove from parent's children list if child
+    if(me.role==='child' && me.parentUids?.length){
+      for(const puid of me.parentUids){
+        const pSnap=await getDoc(userDoc(puid));
+        if(pSnap.exists()){
+          const pData=pSnap.data();
+          const newChildren=(pData.children||[]).filter(c=>c.uid!==uid);
+          await updateDoc(userDoc(puid),{children:newChildren});
+        }
+      }
+    }
+    // Delete Firebase Auth user
+    await deleteUser(auth.currentUser);
+    toast('החשבון נמחק');
+  } catch(e){
+    toast('שגיאה במחיקה — נסה להתחבר מחדש ואז מחק','fail');
+    console.error(e);
+  }
+};
+
 // ── Send link request (child → parent) ──
 window.sendLinkRequest = async () => {
   const parentEmail=document.getElementById('parent-email-input').value.trim().toLowerCase();
@@ -589,34 +656,38 @@ window.sendLinkRequest = async () => {
   err.textContent='';
   if(!parentEmail){err.textContent='הכנס אימייל הורה';return;}
   if(parentEmail===me.email){err.textContent='לא יכול להיות ההורה של עצמך 😅';return;}
-  // Find parent by email
+  if(me.parentUids?.length>=2){err.textContent='כבר מחובר ל-2 הורים — זה המקסימום';return;}
+
   const q=query(collection(db,'users'),where('email','==',parentEmail),where('role','==','parent'));
   const snap=await getDocs(q);
   if(snap.empty){err.textContent='לא נמצא הורה עם האימייל הזה';return;}
-  const parentData=snap.docs[0].data();
   const parentUid=snap.docs[0].id;
-  // Check if already linked
-  if(me.parentUid){err.textContent='כבר מחובר להורה';return;}
-  // Check for existing pending request
-  const reqQ=query(collection(db,'connectionRequests'),where('childUid','==',me.uid),where('status','==','pending'));
+
+  // Check duplicate
+  if(me.parentUids?.includes(parentUid)){err.textContent='כבר מחובר להורה הזה';return;}
+
+  // Check existing pending
+  const reqQ=query(collection(db,'connectionRequests'),
+    where('childUid','==',me.uid),where('parentUid','==',parentUid),where('status','==','pending'));
   const existSnap=await getDocs(reqQ);
   if(!existSnap.empty){
-    document.getElementById('waiting-msg').textContent=`בקשה נשלחה ל-${parentEmail}. ממתין לאישור...`;
-    showScreen('s-waiting'); return;
+    document.getElementById('waiting-msg').textContent=`בקשה כבר נשלחה ל-${parentEmail}. ממתין לאישור...`;
+    window.showScreen('s-waiting'); return;
   }
+
   await addDoc(collection(db,'connectionRequests'),{
-    childUid:me.uid, childName:me.name, childEmail:me.email,
-    parentUid, parentEmail, status:'pending', createdAt:serverTimestamp()
+    childUid:me.uid,childName:me.name,childEmail:me.email,
+    parentUid,parentEmail,status:'pending',createdAt:serverTimestamp()
   });
   document.getElementById('waiting-msg').textContent=`בקשה נשלחה ל-${parentEmail}. ממתין לאישור...`;
-  showScreen('s-waiting');
+  window.showScreen('s-waiting');
 };
 
 // ── Check approval ──
 window.checkApproval = async () => {
   const d=await getDoc(userDoc(me.uid));
   const data=d.data();
-  if(data.parentUid){
+  if(data.parentUids?.length>0){
     me={...me,...data};
     launchApp();
   } else {
@@ -624,16 +695,17 @@ window.checkApproval = async () => {
   }
 };
 
-// ── Load requests (parent) ──
-window.loadRequests = async () => {
+// ── Requests modal ──
+window.showRequestsModal = async () => {
+  document.getElementById('requests-modal').classList.add('open');
   const wrap=document.getElementById('requests-list');
   wrap.innerHTML='<div class="loader"><div class="spinner"></div></div>';
   const q=query(collection(db,'connectionRequests'),where('parentUid','==',me.uid),where('status','==','pending'));
   const snap=await getDocs(q);
-  if(snap.empty){wrap.innerHTML='<p style="color:var(--muted);text-align:center;padding:16px">אין בקשות ממתינות</p>';return;}
+  if(snap.empty){wrap.innerHTML='<p style="color:var(--muted);text-align:center;padding:14px">אין בקשות ממתינות</p>';return;}
   wrap.innerHTML=snap.docs.map(d=>{
     const r=d.data();
-    return `<div class="req-item">
+    return`<div class="req-item">
       <div>
         <div style="font-weight:700">${r.childName}</div>
         <div style="font-size:.8rem;color:var(--muted)">${r.childEmail}</div>
@@ -646,82 +718,109 @@ window.loadRequests = async () => {
   }).join('');
 };
 
-window.approveRequest = async (reqId, childUid, childName) => {
-  // Update request status
+window.approveRequest = async (reqId,childUid,childName) => {
   await updateDoc(doc(db,'connectionRequests',reqId),{status:'approved'});
-  // Set child's parentUid
-  await updateDoc(userDoc(childUid),{parentUid:me.uid});
+  // Add parentUid to child's parentUids array
+  await updateDoc(userDoc(childUid),{parentUids:arrayUnion(me.uid)});
   // Add child to parent's children array
   const myData=(await getDoc(userDoc(me.uid))).data();
-  const children=[...(myData.children||[]),{uid:childUid,name:childName}];
-  await updateDoc(userDoc(me.uid),{children});
-  me.children=children;
+  const alreadyIn=(myData.children||[]).some(c=>c.uid===childUid);
+  if(!alreadyIn){
+    await updateDoc(userDoc(me.uid),{children:arrayUnion({uid:childUid,name:childName})});
+    me.children=[...(me.children||[]),{uid:childUid,name:childName}];
+  }
   toast(`${childName} אושר! 🎉`);
-  loadRequests();
-  buildChildSwitcher();
   document.getElementById('pending-banner').style.display='none';
+  buildChildSwitcher();
+  showRequestsModal();
+  // Auto-switch to new child
+  const btn=document.getElementById(`sw-${childUid}`);
+  if(btn) switchView(childUid,childName,btn);
+  else if(me.children.length===1) {
+    // first child, rebuild then switch
+    setTimeout(()=>{
+      const b=document.getElementById(`sw-${childUid}`);
+      if(b) switchView(childUid,childName,b);
+    },300);
+  }
 };
 
 window.rejectRequest = async (reqId) => {
   await updateDoc(doc(db,'connectionRequests',reqId),{status:'rejected'});
   toast('בקשה נדחתה');
-  loadRequests();
+  showRequestsModal();
 };
 
 // ── Launch app ──
-async function launchApp() {
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+window.launchApp = async () => {
+  window.showScreen('__none__');
   document.getElementById('app').style.display='block';
   document.getElementById('nav-name').textContent=me.name||me.email;
-
-  // Start viewing self
-  viewUid=me.uid; viewName=me.name;
-  document.getElementById('viewing-banner').style.display='none';
   document.getElementById('tx-date').value=new Date().toISOString().split('T')[0];
 
   if(me.role==='parent'){
     buildChildSwitcher();
     checkPendingRequests();
-  }
-
-  // Check allowance if child
-  if(me.role==='child' && me.parentUid){
+    // Parent has no personal account — show first child or empty state
+    if(!me.children||me.children.length===0){
+      document.getElementById('no-children-state').style.display='block';
+      document.getElementById('main-content').style.display='none';
+    } else {
+      // Auto-select first child
+      const first=me.children[0];
+      setTimeout(()=>{
+        const btn=document.getElementById(`sw-${first.uid}`);
+        if(btn) switchView(first.uid,first.name,btn);
+      },100);
+    }
+  } else {
+    // Child — view own account
+    document.getElementById('viewing-banner').style.display='none';
+    document.getElementById('add-tx-panel').style.display='block';
+    document.getElementById('allowance-panel').style.display='none';
+    document.getElementById('add-goal-btn').style.display='flex';
+    document.getElementById('no-children-state').style.display='none';
+    document.getElementById('main-content').style.display='block';
+    viewUid=me.uid;
     await checkAndPayAllowance(me.uid);
+    subscribeData();
+    // Show "add parent" banner if < 2 parents
+    if(!me.parentUids||me.parentUids.length===0){
+      document.getElementById('link-continue-btn').style.display='block';
+    }
   }
+};
 
-  subscribeData();
-}
-
-// ── Build child switcher (parent) ──
+// ── Build child switcher ──
 function buildChildSwitcher(){
   const sw=document.getElementById('child-switcher');
   if(!me.children||!me.children.length){sw.style.display='none';return;}
   sw.style.display='flex';
-  sw.innerHTML=`<button class="child-btn active" id="sw-self" onclick="switchView('${me.uid}','${me.name}',this)">שלי</button>`
-    +me.children.map(c=>`<button class="child-btn" id="sw-${c.uid}" onclick="switchView('${c.uid}','${c.name}',this)">${c.name}</button>`).join('');
+  sw.innerHTML=me.children.map(c=>
+    `<button class="child-btn" id="sw-${c.uid}" onclick="switchView('${c.uid}','${c.name}',this)">${c.name}</button>`
+  ).join('');
 }
 
-// ── Switch view ──
-window.switchView = (uid, name, btn) => {
+// ── Switch view (parent only) ──
+window.switchView = (uid,name,btn) => {
   document.querySelectorAll('.child-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   if(unsubTx) unsubTx();
   if(unsubGoals) unsubGoals();
-  viewUid=uid; viewName=name;
-  transactions=[]; goals=[];
-  const isChild = uid!==me.uid;
-  document.getElementById('viewing-banner').style.display=isChild?'flex':'none';
-  if(isChild) document.getElementById('viewing-name').textContent=`👀 צופה ב: ${name}`;
-  document.getElementById('add-tx-panel').style.display=isChild?'none':'block';
-  document.getElementById('allowance-panel').style.display=isChild?'block':'none';
-  document.getElementById('add-goal-btn').style.display=isChild?'none':'flex';
-  if(isChild) loadAllowanceSettings(uid);
-  // Also check allowance for child
-  if(isChild) checkAndPayAllowance(uid);
+  viewUid=uid; transactions=[]; goals=[];
+  document.getElementById('no-children-state').style.display='none';
+  document.getElementById('main-content').style.display='block';
+  document.getElementById('viewing-banner').style.display='flex';
+  document.getElementById('viewing-name').textContent=`👀 צופה בחשבון של ${name}`;
+  document.getElementById('add-tx-panel').style.display='none';
+  document.getElementById('allowance-panel').style.display='block';
+  document.getElementById('add-goal-btn').style.display='none';
+  loadAllowanceSettings(uid);
+  checkAndPayAllowance(uid);
   subscribeData();
 };
 
-// ── Check pending requests ──
+// ── Check pending requests (parent) ──
 async function checkPendingRequests(){
   const q=query(collection(db,'connectionRequests'),where('parentUid','==',me.uid),where('status','==','pending'));
   const snap=await getDocs(q);
@@ -734,25 +833,22 @@ async function checkPendingRequests(){
 // ── Allowance ──
 async function checkAndPayAllowance(childUid){
   try {
-    const settingsRef=doc(db,`users/${childUid}/settings/allowance`);
-    const settingsSnap=await getDoc(settingsRef);
-    if(!settingsSnap.exists()) return;
-    const s=settingsSnap.data();
+    const ref=doc(db,`users/${childUid}/settings/allowance`);
+    const snap=await getDoc(ref);
+    if(!snap.exists()) return;
+    const s=snap.data();
     if(!s.enabled||!s.amount||s.amount<=0) return;
-    const now=new Date();
-    const lastPaid=s.lastPaid ? s.lastPaid.toDate() : null;
-    const daysSince=lastPaid ? (now-lastPaid)/(1000*60*60*24) : 999;
+    const lastPaid=s.lastPaid?s.lastPaid.toDate():null;
+    const daysSince=lastPaid?(Date.now()-lastPaid)/(1000*60*60*24):999;
     if(daysSince>=7){
-      // Pay allowance
-      const desc=s.desc||'דמי כיס שבועיים';
       await addDoc(userCol(childUid,'transactions'),{
-        type:'דמי כיס', amount:Math.abs(s.amount), desc,
-        cat:'דמי כיס', date:now.toISOString(), createdAt:serverTimestamp(), isAllowance:true
+        type:'דמי כיס',amount:Math.abs(s.amount),desc:s.desc||'דמי כיס שבועיים',
+        cat:'דמי כיס',date:new Date().toISOString(),createdAt:serverTimestamp(),isAllowance:true
       });
-      await updateDoc(settingsRef,{lastPaid:serverTimestamp()});
+      await updateDoc(ref,{lastPaid:serverTimestamp()});
       if(childUid===me.uid) toast(`קיבלת דמי כיס: ${fmt(s.amount)} 🧡`,'info');
     }
-  } catch(e){ console.warn('allowance check failed',e); }
+  } catch(e){ console.warn('allowance check:',e); }
 }
 
 window.loadAllowanceSettings = async (childUid) => {
@@ -763,10 +859,8 @@ window.loadAllowanceSettings = async (childUid) => {
   document.getElementById('allow-day').value=s.dayOfWeek??0;
   document.getElementById('allow-desc').value=s.desc||'דמי כיס שבועיים';
   document.getElementById('allow-enabled').checked=s.enabled||false;
-  if(s.lastPaid){
-    const d=s.lastPaid.toDate();
-    document.getElementById('allow-status').textContent=`תשלום אחרון: ${d.toLocaleDateString('he-IL')}`;
-  }
+  document.getElementById('allow-status').textContent=s.lastPaid
+    ?`תשלום אחרון: ${s.lastPaid.toDate().toLocaleDateString('he-IL')}`:'';
 };
 
 window.saveAllowance = async () => {
@@ -774,27 +868,26 @@ window.saveAllowance = async () => {
   const dayOfWeek=parseInt(document.getElementById('allow-day').value);
   const desc=document.getElementById('allow-desc').value.trim()||'דמי כיס שבועיים';
   const enabled=document.getElementById('allow-enabled').checked;
-  const ref=doc(db,`users/${viewUid}/settings/allowance`);
-  await setDoc(ref,{amount,dayOfWeek,desc,enabled},{merge:true});
+  await setDoc(doc(db,`users/${viewUid}/settings/allowance`),{amount,dayOfWeek,desc,enabled},{merge:true});
   toast('הגדרות דמי כיס נשמרו 🧡');
   loadAllowanceSettings(viewUid);
 };
 
-// ── Subscribe to data ──
+// ── Subscribe ──
 function subscribeData(){
   const txQ=query(userCol(viewUid,'transactions'),orderBy('createdAt','desc'));
-  unsubTx=onSnapshot(txQ, snap=>{
+  unsubTx=onSnapshot(txQ,snap=>{
     transactions=snap.docs.map(d=>({id:d.id,...d.data()}));
     computeStats(); renderTable(); renderGoals(); renderChart();
   });
-  unsubGoals=onSnapshot(userCol(viewUid,'goals'), snap=>{
+  unsubGoals=onSnapshot(userCol(viewUid,'goals'),snap=>{
     goals=snap.docs.map(d=>({id:d.id,...d.data()}));
     renderGoals();
   });
 }
 
 // ── Filter ──
-window.setFilter = (f,el)=>{
+window.setFilter = (f,el) => {
   activeFilter=f;
   document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
   el.classList.add('active'); renderTable();
@@ -851,7 +944,7 @@ function computeStats(){
     switch(t.type){
       case 'הכנסה':     wallet+=a; break;
       case 'הוצאה':     wallet-=a; break;
-      case 'דמי כיס':   bank+=a; break;  // goes straight to bank
+      case 'דמי כיס':   bank+=a; break;
       case 'איזון ארנק':wallet+=t.amount; break;
       case 'הפקדה':     wallet-=a; bank+=a; break;
       case 'משיכה':     wallet+=a; bank-=a; break;
@@ -870,7 +963,7 @@ function computeStats(){
   document.getElementById('s-monthly').textContent=fmt(monthly);
   document.getElementById('s-yearly').textContent=fmt(monthly*12)+' לשנה';
   document.getElementById('s-since').textContent=transactions.length?'מאז '+earliest.toLocaleDateString('he-IL'):'';
-  return{bank,wallet,total,monthly};
+  return{bank,wallet,total};
 }
 
 // ── Render table ──
@@ -895,18 +988,19 @@ function renderTable(){
   };
   const sign=t=>(t.type==='הכנסה'||t.type==='הכנסת בנק'||t.type==='דמי כיס')?'+':
     (t.type==='הוצאה'||t.type==='הוצאת בנק')?'-':'';
-  const canDelete=viewUid===me.uid || me.role==='parent';
+  // Can delete: child viewing own, or parent viewing child
+  const canDel = viewUid===me.uid || me.role==='parent';
   wrap.innerHTML=`<div style="overflow-x:auto"><table>
-    <thead><tr><th>תאריך</th><th>תיאור</th><th>סוג</th><th>קטגוריה</th><th>סכום</th>${canDelete?'<th></th>':''}</tr></thead>
+    <thead><tr><th>תאריך</th><th>תיאור</th><th>סוג</th><th>קטגוריה</th><th>סכום</th>${canDel?'<th></th>':''}</tr></thead>
     <tbody>${sorted.map(t=>`<tr>
       <td style="color:var(--muted);font-size:.76rem;white-space:nowrap">${new Date(t.date).toLocaleDateString('he-IL')}</td>
       <td>${t.desc||'—'}</td>
       <td><span class="badge ${badgeCls(t)}">${t.type}</span></td>
       <td style="color:var(--muted);font-size:.78rem">${t.cat||'—'}</td>
       <td class="${amtCls(t)}">${sign(t)}${fmt(t.amount)}</td>
-      ${canDelete?`<td><button class="btn btn-red btn-sm" style="padding:3px 8px" onclick="deleteTransaction('${t.id}')">✕</button></td>`:''}
-    </tr>`).join('')}</tbody>
-  </table></div>`;
+      ${canDel?`<td><button class="btn btn-red btn-sm" style="padding:3px 8px" onclick="deleteTransaction('${t.id}')">✕</button></td>`:''}
+    </tr>`).join('')}
+    </tbody></table></div>`;
 }
 
 // ── Render goals ──
@@ -914,16 +1008,17 @@ function renderGoals(){
   const{total}=computeStats();
   const wrap=document.getElementById('goals-list');
   if(!goals.length){wrap.innerHTML='<div style="color:var(--muted);font-size:.82rem;text-align:center;padding:6px">אין יעדים עדיין</div>';return;}
+  const canDel=viewUid===me.uid;
   wrap.innerHTML=goals.map(g=>{
     const pct=Math.min(100,(total/g.target)*100);
     return`<div class="goal-item">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div style="font-weight:600;font-size:.88rem">${g.name}</div>
-        ${me.role==='parent'&&viewUid===me.uid||viewUid===me.uid?`<button class="btn btn-red btn-sm" style="padding:2px 7px;font-size:.68rem" onclick="deleteGoal('${g.id}')">✕</button>`:''}
+        ${canDel?`<button class="btn btn-red btn-sm" style="padding:2px 7px;font-size:.68rem" onclick="deleteGoal('${g.id}')">✕</button>`:''}
       </div>
       <div class="goal-bar"><div class="goal-fill" style="width:${pct}%"></div></div>
       <div style="display:flex;justify-content:space-between;font-size:.73rem;color:var(--muted)">
-        <span>${pct.toFixed(0)}% מהיעד</span><span>נשאר ${fmt(Math.max(0,g.target-total))}</span>
+        <span>${pct.toFixed(0)}%</span><span>נשאר ${fmt(Math.max(0,g.target-total))}</span>
       </div>
       <div style="font-size:.7rem;color:var(--muted);margin-top:1px">יעד: ${fmt(g.target)}</div>
     </div>`;
@@ -946,7 +1041,7 @@ function renderChart(){
   }
   const maxV=Math.max(1,...months.map(m=>Math.max(m.inc,m.exp)));
   document.getElementById('chart-area').innerHTML=`
-    <div style="display:flex;gap:10px;align-items:flex-end;height:110px;padding:0 4px">
+    <div style="display:flex;gap:10px;align-items:flex-end;height:110px;padding:0 18px 0">
       ${months.map(m=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
         <div style="width:100%;display:flex;gap:3px;align-items:flex-end;height:90px">
           <div title="הכנסות ${fmt(m.inc)}" style="flex:1;border-radius:4px 4px 0 0;background:var(--green);opacity:.8;height:${(m.inc/maxV*88)}px;min-height:${m.inc>0?3:0}px"></div>
@@ -955,52 +1050,44 @@ function renderChart(){
         <div style="font-size:.62rem;color:var(--muted);text-align:center">${m.label}</div>
       </div>`).join('')}
     </div>
-    <div style="display:flex;gap:14px;padding:6px 4px 0;font-size:.72rem;color:var(--muted)">
+    <div style="display:flex;gap:14px;padding:6px 18px 14px;font-size:.72rem;color:var(--muted)">
       <span><span style="display:inline-block;width:8px;height:8px;background:var(--green);border-radius:2px;margin-left:4px"></span>הכנסות</span>
       <span><span style="display:inline-block;width:8px;height:8px;background:var(--red);border-radius:2px;margin-left:4px"></span>הוצאות</span>
     </div>`;
 }
 
-// ── Auth state listener ──
+// ── Auth listener ──
 onAuthStateChanged(auth, async (u) => {
-  if(!u){
-    me=null;
-    showScreen('s-auth');
-    return;
-  }
-  // Load user profile
+  if(!u){ me=null; window.showScreen('s-auth'); return; }
+
   const snap=await getDoc(userDoc(u.uid));
   if(!snap.exists()){
-    // Profile missing — treat as parent (safe default that goes straight to app)
-    me={uid:u.uid,email:u.email,name:u.displayName||u.email,role:'parent',parentUid:null,children:[]};
-    await setDoc(userDoc(u.uid), me, {merge:true});
+    me={uid:u.uid,email:(u.email||'').toLowerCase(),name:u.displayName||u.email,role:'parent',parentUids:[],children:[]};
+    await setDoc(userDoc(u.uid),me,{merge:true});
   } else {
     me={uid:u.uid,...snap.data()};
+    // Migrate old parentUid → parentUids
+    if(me.parentUid && !me.parentUids?.length){
+      me.parentUids=[me.parentUid];
+      await updateDoc(userDoc(u.uid),{parentUids:[me.parentUid]});
+    }
+    if(!me.parentUids) me.parentUids=[];
   }
 
-  // PARENT → always go straight to app, no linking needed
   if(me.role==='parent'){
     await launchApp();
-    // Check pending requests in background
-    const q=query(collection(db,'connectionRequests'),where('parentUid','==',me.uid),where('status','==','pending'));
-    const pendingSnap=await getDocs(q);
-    if(!pendingSnap.empty){
-      document.getElementById('pending-banner').style.display='flex';
-      document.getElementById('pending-banner-sub').textContent=`${pendingSnap.size} בקשה ממתינה לאישור`;
-    }
     return;
   }
 
-  // CHILD → needs parent link
-  if(!me.parentUid){
-    // Check for existing pending request
+  // Child
+  if(!me.parentUids||me.parentUids.length===0){
+    // Check pending request
     const q=query(collection(db,'connectionRequests'),where('childUid','==',me.uid),where('status','==','pending'));
     const reqSnap=await getDocs(q);
     if(!reqSnap.empty){
-      showScreen('s-waiting');
-      document.getElementById('waiting-msg').textContent='בקשת החיבור נשלחה. ממתין לאישור ההורה...';
+      window.showScreen('s-waiting');
     } else {
-      showScreen('s-link');
+      window.showScreen('s-link');
     }
   } else {
     await launchApp();
