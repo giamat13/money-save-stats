@@ -231,6 +231,7 @@ tr:hover td{background:rgba(240,180,41,.025);}
       <div class="err" id="link-err"></div>
       <button class="btn btn-gold btn-full" onclick="sendLinkRequest()">שלח בקשה</button>
       <button class="btn btn-ghost btn-full" id="link-continue-btn" style="display:none" onclick="launchApp()">המשך לאפליקציה ←</button>
+      <button class="btn btn-gold btn-full" onclick="launchApp()">כנס ללא הורה ←</button>
       <button class="btn btn-ghost btn-full" onclick="doLogout()">התנתק</button>
     </div>
   </div>
@@ -244,6 +245,7 @@ tr:hover td{background:rgba(240,180,41,.025);}
     <p class="sub" id="waiting-msg">בקשת החיבור נשלחה. ממתין לאישור ההורה...</p>
     <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px">
       <button class="btn btn-ghost btn-full" onclick="checkApproval()">🔄 בדוק שוב</button>
+      <button class="btn btn-gold btn-full" onclick="launchApp()">כנס ללא הורה ←</button>
       <button class="btn btn-ghost btn-full" onclick="doLogout()">התנתק</button>
     </div>
   </div>
@@ -657,14 +659,13 @@ window.showSettingsModal = () => {
     const display = document.getElementById('connected-parents-display');
     display.textContent = me.parentUids?.length ? `מחובר ל-${me.parentUids.length} הורה/ים` : 'אין הורים מחוברים';
     const discBtn = document.getElementById('disconnect-parent-btn');
-    discBtn.style.display = me.parentUids?.length ? 'block' : 'none';
+    if(discBtn) discBtn.style.display = me.parentUids?.length ? 'block' : 'none';
   } else {
     addParentSetting.style.display = 'none';
   }
   document.getElementById('settings-modal').classList.add('open');
 };
 
-// ── Disconnect child from parent (child side) ──
 window.confirmDisconnectFromParent = () => {
   if(!confirm('התנתק מכל ההורים המחוברים?\n\nהנתונים שלך יישמרו, אך ההורים לא יוכלו לנהל את החשבון שלך.')) return;
   disconnectFromAllParents();
@@ -674,8 +675,6 @@ window.disconnectFromAllParents = async () => {
   try {
     const uid = me.uid;
     const parentUids = [...(me.parentUids || [])];
-
-    // Remove child from each parent's children list
     for(const puid of parentUids) {
       try {
         const pSnap = await getDoc(userDoc(puid));
@@ -684,24 +683,12 @@ window.disconnectFromAllParents = async () => {
           const newChildren = (pData.children || []).filter(c => c.uid !== uid);
           await updateDoc(userDoc(puid), {children: newChildren});
         }
-      } catch(e) { /* parent may not exist, skip */ }
+      } catch(e) { /* parent may not exist */ }
     }
-
-    // Clear child's parentUids
     await updateDoc(userDoc(uid), {parentUids: []});
     me.parentUids = [];
-
     document.getElementById('settings-modal').classList.remove('open');
     toast('התנתקת מכל ההורים ✓');
-
-    // Redirect to link screen
-    window.showScreen('s-link');
-    document.getElementById('app').style.display = 'none';
-    // Reset link screen state
-    document.getElementById('link-continue-btn').style.display = 'none';
-    document.getElementById('link-err').textContent = '';
-    document.getElementById('parent-email-input').value = '';
-    document.getElementById('linked-parents-list').innerHTML = '';
   } catch(e) {
     toast('שגיאה בהתנתקות', 'fail');
     console.error(e);
@@ -1264,19 +1251,8 @@ onAuthStateChanged(auth, async (u) => {
     return;
   }
 
-  // Child
-  if(!me.parentUids||me.parentUids.length===0){
-    // Check pending request
-    const q=query(collection(db,'connectionRequests'),where('childUid','==',me.uid),where('status','==','pending'));
-    const reqSnap=await getDocs(q);
-    if(!reqSnap.empty){
-      window.showScreen('s-waiting');
-    } else {
-      window.showScreen('s-link');
-    }
-  } else {
-    await launchApp();
-  }
+  // Child — parent link is optional
+  await launchApp();
 });
 
 // ── Backup / Export / Import ──
