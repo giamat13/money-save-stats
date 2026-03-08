@@ -654,16 +654,57 @@ window.doPasswordReset = async () => {
 };
 
 // ── Settings modal ──
-window.showSettingsModal = () => {
+window.showSettingsModal = async () => {
   const addParentSetting = document.getElementById('add-parent-setting');
   if(me?.role === 'child') {
     addParentSetting.style.display = 'block';
-    const display = document.getElementById('connected-parents-display');
-    display.textContent = me.parentUids?.length ? `מחובר ל-${me.parentUids.length} הורה/ים` : 'אין הורים מחוברים';
+    await renderConnectedParents();
   } else {
     addParentSetting.style.display = 'none';
   }
   document.getElementById('settings-modal').classList.add('open');
+};
+
+async function renderConnectedParents() {
+  const list = document.getElementById('connected-parents-list');
+  if(!list) return;
+  if(!me.parentUids?.length) {
+    list.innerHTML = '<div style="font-size:.82rem;color:var(--muted);padding:4px 0">אין הורים מחוברים</div>';
+    return;
+  }
+  const items = await Promise.all(me.parentUids.map(async puid => {
+    try {
+      const snap = await getDoc(userDoc(puid));
+      const name = snap.exists() ? snap.data().name || snap.data().email : 'הורה';
+      return {puid, name};
+    } catch(e) { return {puid, name: 'הורה'}; }
+  }));
+  list.innerHTML = items.map(({puid, name}) =>
+    `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">
+      <div style="font-size:.85rem;font-weight:600">${name}</div>
+      <button class="btn btn-red btn-sm" onclick="disconnectParent('${puid}','${name}')">התנתק</button>
+    </div>`
+  ).join('');
+}
+
+window.disconnectParent = async (puid, pname) => {
+  if(!confirm(`התנתק מ-${pname}?`)) return;
+  try {
+    try {
+      const pSnap = await getDoc(userDoc(puid));
+      if(pSnap.exists()) {
+        const newCh = (pSnap.data().children||[]).filter(c=>c.uid!==me.uid);
+        await updateDoc(userDoc(puid), {children: newCh});
+      }
+    } catch(e){}
+    const newPids = me.parentUids.filter(p=>p!==puid);
+    await updateDoc(userDoc(me.uid), {parentUids: newPids});
+    me.parentUids = newPids;
+    toast(`התנתקת מ-${pname} ✓`);
+    await renderConnectedParents();
+  } catch(e) {
+    toast('שגיאה בהתנתקות','fail'); console.error(e);
+  }
 };
 
 window.showAddParentModal = () => {
