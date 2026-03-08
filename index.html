@@ -512,6 +512,23 @@ tr:hover td{background:rgba(240,180,41,.025);}
   </div>
 </div>
 
+<!-- Reauth before delete modal -->
+<div class="modal-overlay" id="reauth-modal">
+  <div class="modal">
+    <h2>🔐 אמת זהות</h2>
+    <p style="color:var(--muted);font-size:.88rem;margin-bottom:16px">כדי למחוק את החשבון, הכנס את הסיסמה שלך.</p>
+    <div class="form-group">
+      <label class="form-label">סיסמה</label>
+      <input type="password" id="reauth-pass" placeholder="הסיסמה שלך" />
+    </div>
+    <div class="err" id="reauth-err"></div>
+    <div class="modal-actions">
+      <button class="btn btn-red" onclick="doDeleteWithReauth()">מחק חשבון</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('reauth-modal').classList.remove('open')">ביטול</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script type="module">
@@ -519,7 +536,8 @@ import { initializeApp }           from "https://www.gstatic.com/firebasejs/12.1
 import { getAnalytics, logEvent }  from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
 import {
   getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-  signOut, onAuthStateChanged, updateProfile, sendPasswordResetEmail, deleteUser
+  signOut, onAuthStateChanged, updateProfile, sendPasswordResetEmail, deleteUser,
+  EmailAuthProvider, reauthenticateWithCredential
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 import {
   getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs,
@@ -741,44 +759,60 @@ window.sendAddParentRequest = async () => {
 };
 
 // ── Delete account ──
-window.confirmDeleteAccount = async () => {
+window.confirmDeleteAccount = () => {
   document.getElementById('settings-modal').classList.remove('open');
-  const confirmed=confirm(`⚠️ מחיקת חשבון לצמיתות\n\nכל הנתונים שלך יימחקו ולא ניתן יהיה לשחזר אותם.\nהאם אתה בטוח?`);
-  if(!confirmed) return;
+  document.getElementById('reauth-pass').value = '';
+  document.getElementById('reauth-err').textContent = '';
+  document.getElementById('reauth-modal').classList.add('open');
+};
+
+window.doDeleteWithReauth = async () => {
+  const pass = document.getElementById('reauth-pass').value;
+  const err = document.getElementById('reauth-err');
+  err.textContent = '';
+  if(!pass) { err.textContent = 'הכנס סיסמה'; return; }
+
   try {
-    const uid=me.uid;
-    // Delete subcollections
+    const credential = EmailAuthProvider.credential(me.email, pass);
+    await reauthenticateWithCredential(auth.currentUser, credential);
+  } catch(e) {
+    err.textContent = 'סיסמה שגויה';
+    return;
+  }
+
+  const confirmed = confirm(`⚠️ מחיקת חשבון לצמיתות\n\nכל הנתונים שלך יימחקו ולא ניתן יהיה לשחזר אותם.\nהאם אתה בטוח?`);
+  if(!confirmed) { document.getElementById('reauth-modal').classList.remove('open'); return; }
+
+  try {
+    const uid = me.uid;
     for(const sub of ['transactions','goals']){
-      const snap=await getDocs(userCol(uid,sub));
-      const batch=writeBatch(db);
-      snap.docs.forEach(d=>batch.delete(d.ref));
+      const snap = await getDocs(userCol(uid, sub));
+      const batch = writeBatch(db);
+      snap.docs.forEach(d => batch.delete(d.ref));
       await batch.commit();
     }
-    // Delete settings
     try {
-      const settSnap=await getDocs(collection(db,`users/${uid}/settings`));
-      const batch=writeBatch(db);
-      settSnap.docs.forEach(d=>batch.delete(d.ref));
+      const settSnap = await getDocs(collection(db, `users/${uid}/settings`));
+      const batch = writeBatch(db);
+      settSnap.docs.forEach(d => batch.delete(d.ref));
       await batch.commit();
     } catch(e){}
-    // Delete user doc
     await deleteDoc(userDoc(uid));
-    // Remove from parent's children list if child
     if(me.role==='child' && me.parentUids?.length){
       for(const puid of me.parentUids){
-        const pSnap=await getDoc(userDoc(puid));
-        if(pSnap.exists()){
-          const pData=pSnap.data();
-          const newChildren=(pData.children||[]).filter(c=>c.uid!==uid);
-          await updateDoc(userDoc(puid),{children:newChildren});
-        }
+        try {
+          const pSnap = await getDoc(userDoc(puid));
+          if(pSnap.exists()){
+            const newChildren = (pSnap.data().children||[]).filter(c=>c.uid!==uid);
+            await updateDoc(userDoc(puid), {children: newChildren});
+          }
+        } catch(e){}
       }
     }
-    // Delete Firebase Auth user
     await deleteUser(auth.currentUser);
     toast('החשבון נמחק');
   } catch(e){
-    toast('שגיאה במחיקה — נסה להתחבר מחדש ואז מחק','fail');
+    toast('שגיאה במחיקה','fail');
     console.error(e);
   }
 };
