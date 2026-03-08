@@ -274,6 +274,7 @@ tr:hover td{background:rgba(240,180,41,.025);}
         <div class="banner-title" id="viewing-name"></div>
         <div class="banner-sub">צופה בחשבון הילד</div>
       </div>
+      <button class="btn btn-sm btn-red" onclick="confirmDisconnectChild()">🔌 התנתק מילד</button>
     </div>
 
     <!-- No children state (parent only) -->
@@ -812,6 +813,54 @@ window.rejectRequest = async (reqId) => {
   await updateDoc(doc(db,'connectionRequests',reqId),{status:'rejected'});
   toast('בקשה נדחתה');
   showRequestsModal();
+};
+
+// ── Disconnect child (parent only) ──
+window.confirmDisconnectChild = () => {
+  const childName = document.getElementById('viewing-name').textContent.replace('👀 צופה בחשבון של ','');
+  if(!confirm(`התנתק מ-${childName}?\n\nהילד לא יוכל להיות מנוהל על ידך עוד, אך הנתונים שלו יישמרו.`)) return;
+  disconnectChild(viewUid, childName);
+};
+
+window.disconnectChild = async (childUid, childName) => {
+  try {
+    // Remove child from parent's children list
+    const newChildren = (me.children||[]).filter(c => c.uid !== childUid);
+    await updateDoc(userDoc(me.uid), {children: newChildren});
+    me.children = newChildren;
+
+    // Remove parent from child's parentUids list
+    const childSnap = await getDoc(userDoc(childUid));
+    if(childSnap.exists()) {
+      const childData = childSnap.data();
+      const newParentUids = (childData.parentUids||[]).filter(p => p !== me.uid);
+      await updateDoc(userDoc(childUid), {parentUids: newParentUids});
+    }
+
+    toast(`התנתקת מ-${childName}`);
+
+    // Unsubscribe and reset view
+    if(unsubTx) unsubTx();
+    if(unsubGoals) unsubGoals();
+    viewUid = null; transactions = []; goals = [];
+
+    // Rebuild switcher and show empty state or next child
+    buildChildSwitcher();
+    document.getElementById('viewing-banner').style.display = 'none';
+    if(!me.children || me.children.length === 0) {
+      document.getElementById('main-content').style.display = 'none';
+      document.getElementById('no-children-state').style.display = 'block';
+    } else {
+      const first = me.children[0];
+      setTimeout(() => {
+        const btn = document.getElementById(`sw-${first.uid}`);
+        if(btn) switchView(first.uid, first.name, btn);
+      }, 100);
+    }
+  } catch(e) {
+    toast('שגיאה בהתנתקות', 'fail');
+    console.error(e);
+  }
 };
 
 // ── Launch app ──
