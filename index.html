@@ -1177,16 +1177,21 @@ function computeStats(){
     }
   }
   const total=bank+wallet;
+  const nonInitial=transactions.filter(t=>!t.isInitial);
   let earliest=new Date();
-  for(const t of transactions){const d=new Date(t.date);if(d<earliest)earliest=d;}
+  for(const t of nonInitial){const d=new Date(t.date);if(d<earliest)earliest=d;}
   const months=Math.max(1,(Date.now()-earliest)/(1000*60*60*24*30.44));
-  const monthly=total/months;
+  let incomeTotal=0;
+  for(const t of nonInitial){
+    if(t.type==='הכנסה'||t.type==='הכנסת בנק'||t.type==='דמי כיס') incomeTotal+=Math.abs(t.amount);
+  }
+  const monthly=nonInitial.length?incomeTotal/months:0;
   document.getElementById('s-total').textContent=fmt(total);
   document.getElementById('s-bank').textContent=fmt(Math.max(0,bank));
   document.getElementById('s-wallet').textContent=fmt(Math.max(0,wallet));
   document.getElementById('s-monthly').textContent=fmt(monthly);
   document.getElementById('s-yearly').textContent=fmt(monthly*12)+' לשנה';
-  document.getElementById('s-since').textContent=transactions.length?'מאז '+earliest.toLocaleDateString('he-IL'):'';
+  document.getElementById('s-since').textContent=nonInitial.length?'מאז '+earliest.toLocaleDateString('he-IL'):'';
   return{bank,wallet,total};
 }
 
@@ -1257,6 +1262,7 @@ function renderChart(){
     return{label:d.toLocaleDateString('he-IL',{month:'short'}),y:d.getFullYear(),m:d.getMonth(),inc:0,exp:0};
   });
   for(const t of transactions){
+    if(t.isInitial) continue;
     const d=new Date(t.date);
     const sl=months.find(x=>x.y===d.getFullYear()&&x.m===d.getMonth());
     if(!sl) continue;
