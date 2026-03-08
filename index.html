@@ -442,11 +442,33 @@ tr:hover td{background:rgba(240,180,41,.025);}
   <div class="modal">
     <h2>⚙️ הגדרות</h2>
     <div style="display:flex;flex-direction:column;gap:10px">
+      <div id="add-parent-setting" style="display:none">
+        <button class="btn btn-green btn-full" onclick="showAddParentModal()">👨‍👩‍👧 הוסף הורה</button>
+        <div id="connected-parents-display" style="margin-top:8px;font-size:.78rem;color:var(--muted)"></div>
+      </div>
       <button class="btn btn-blue btn-full" onclick="showResetModal();document.getElementById('settings-modal').classList.remove('open')">🔑 שנה סיסמה / אפס סיסמה</button>
       <button class="btn btn-red btn-full" onclick="confirmDeleteAccount()">🗑️ מחק חשבון לצמיתות</button>
     </div>
     <div class="modal-actions" style="margin-top:14px">
       <button class="btn btn-ghost btn-full" onclick="document.getElementById('settings-modal').classList.remove('open')">סגור</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add parent modal -->
+<div class="modal-overlay" id="add-parent-modal">
+  <div class="modal">
+    <h2>👨‍👩‍👧 הוסף הורה</h2>
+    <p style="color:var(--muted);font-size:.88rem;margin-bottom:16px">הכנס את האימייל של ההורה. הם יקבלו בקשת חיבור לאישור.</p>
+    <div class="form-group">
+      <label class="form-label">אימייל הורה</label>
+      <input type="email" id="add-parent-email" placeholder="אימייל ההורה" />
+    </div>
+    <div class="err" id="add-parent-err"></div>
+    <div class="info-msg" id="add-parent-ok" style="display:none">✓ בקשה נשלחה! ממתין לאישור.</div>
+    <div class="modal-actions">
+      <button class="btn btn-gold" onclick="sendAddParentRequest()">שלח בקשה</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('add-parent-modal').classList.remove('open')">ביטול</button>
     </div>
   </div>
 </div>
@@ -603,7 +625,48 @@ window.doPasswordReset = async () => {
 
 // ── Settings modal ──
 window.showSettingsModal = () => {
+  const addParentSetting = document.getElementById('add-parent-setting');
+  if(me?.role === 'child') {
+    addParentSetting.style.display = 'block';
+    const display = document.getElementById('connected-parents-display');
+    display.textContent = me.parentUids?.length ? `מחובר ל-${me.parentUids.length} הורה/ים` : 'אין הורים מחוברים';
+  } else {
+    addParentSetting.style.display = 'none';
+  }
   document.getElementById('settings-modal').classList.add('open');
+};
+
+window.showAddParentModal = () => {
+  document.getElementById('settings-modal').classList.remove('open');
+  document.getElementById('add-parent-err').textContent = '';
+  document.getElementById('add-parent-ok').style.display = 'none';
+  document.getElementById('add-parent-email').value = '';
+  document.getElementById('add-parent-modal').classList.add('open');
+};
+
+window.sendAddParentRequest = async () => {
+  const parentEmail = document.getElementById('add-parent-email').value.trim().toLowerCase();
+  const err = document.getElementById('add-parent-err');
+  const ok = document.getElementById('add-parent-ok');
+  err.textContent = '';
+  ok.style.display = 'none';
+  if(!parentEmail){err.textContent='הכנס אימייל הורה';return;}
+  if(parentEmail === me.email){err.textContent='לא יכול להיות ההורה של עצמך 😅';return;}
+  const q = query(collection(db,'users'),where('email','==',parentEmail),where('role','==','parent'));
+  const snap = await getDocs(q);
+  if(snap.empty){err.textContent='לא נמצא הורה עם האימייל הזה';return;}
+  const parentUid = snap.docs[0].id;
+  if(me.parentUids?.includes(parentUid)){err.textContent='כבר מחובר להורה הזה';return;}
+  const reqQ = query(collection(db,'connectionRequests'),
+    where('childUid','==',me.uid),where('parentUid','==',parentUid),where('status','==','pending'));
+  const existSnap = await getDocs(reqQ);
+  if(!existSnap.empty){err.textContent='בקשה כבר נשלחה להורה הזה — ממתין לאישור';return;}
+  await addDoc(collection(db,'connectionRequests'),{
+    childUid:me.uid,childName:me.name,childEmail:me.email,
+    parentUid,parentEmail,status:'pending',createdAt:serverTimestamp()
+  });
+  ok.style.display = 'block';
+  toast('בקשה נשלחה! ✓');
 };
 
 // ── Delete account ──
@@ -656,7 +719,7 @@ window.sendLinkRequest = async () => {
   err.textContent='';
   if(!parentEmail){err.textContent='הכנס אימייל הורה';return;}
   if(parentEmail===me.email){err.textContent='לא יכול להיות ההורה של עצמך 😅';return;}
-  if(me.parentUids?.length>=2){err.textContent='כבר מחובר ל-2 הורים — זה המקסימום';return;}
+
 
   const q=query(collection(db,'users'),where('email','==',parentEmail),where('role','==','parent'));
   const snap=await getDocs(q);
