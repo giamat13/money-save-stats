@@ -458,6 +458,7 @@ tr:hover td{background:rgba(240,180,41,.025);}
             <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(event)" />
           </label>
           <button class="btn btn-ghost btn-full" id="drive-backup-btn" onclick="backupToDrive()">☁️ גיבוי לגוגל דרייב</button>
+          <button class="btn btn-ghost btn-full" id="drive-restore-btn" onclick="restoreFromDrive()">🔄 שחזור מגוגל דרייב</button>
         </div>
         <div style="font-size:.72rem;color:var(--muted);margin-top:6px;text-align:center" id="backup-status"></div>
       </div>
@@ -1047,12 +1048,14 @@ window.addTransaction = async () => {
   document.getElementById('tx-cat').value='';
   logEvent(analytics,'add_transaction',{type});
   toast('נשמר ✓');
+  autoBackupToDrive();
 };
 
 window.deleteTransaction = async (id) => {
   if(!confirm('למחוק?')) return;
   await deleteDoc(doc(db,`users/${viewUid}/transactions`,id));
   toast('נמחק');
+  autoBackupToDrive();
 };
 
 // ── Goals ──
@@ -1303,6 +1306,81 @@ window.importJSON = async (event) => {
 
 // ── Google Drive backup ──
 let driveAccessToken = null;
+const FOLDER_NAME = 'גיבויי כסף';
+const MAX_BACKUPS = 3;
+
+async function getDriveToken(silent=false) {
+  if(driveAccessToken) return driveAccessToken;
+  return new Promise((resolve, reject) => {
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: window.GOOGLE_CLIENT_ID || (() => { throw new Error('נדרש Google Client ID'); })(),
+      scope: 'https://www.googleapis.com/auth/drive.file',
+      callback: (resp) => {
+        if(resp.error) reject(new Error(resp.error));
+        else { driveAccessToken = resp.access_token; resolve(resp.access_token); }
+      }
+    });
+    client.requestAccessToken({prompt: silent ? 'none' : ''});
+  });
+}
+
+async function getOrCreateFolder(token) {
+  const res = await fetch(
+    `https://www.googleapis.com/drive/v3/files?q=name='${FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+    {headers: {Authorization: `Bearer ${token}`}}
+  );
+  const data = await res.json();
+  if(data.files?.[0]?.id) return data.files[0].id;
+  const createRes = await fetch('https://www.googleapis.com/drive/v3/files', {
+    method: 'POST',
+    headers: {Authorization: `Bearer ${token}`, 'Content-Type': 'application/json'},
+    body: JSON.stringify({name: FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder'})
+  });
+  return (await createRes.json()).id;
+}
+
+async function uploadBackupFile(token, folderId, fileName, fileContent) {
+  const blob = new Blob([fileContent], {type:'application/json'});
+  const form = new FormData();
+  form.append('metadata', new Blob([JSON.stringify({name: fileName, mimeType:'application/json', parents:[folderId]})], {type:'application/json'}));
+  form.append('file', blob);
+  const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+    method: 'POST',
+    headers: {Authorization: `Bearer ${token}`},
+    body: form
+  });
+  if(!res.ok) throw new Error('Upload failed');
+  return await res.json();
+}
+
+async function pruneOldBackups(token, folderId) {
+  const res = await fetch(
+    `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents and trashed=false&orderBy=createdTime desc&fields=files(id,name,createdTime)`,
+    {headers: {Authorization: `Bearer ${token}`}}
+  );
+  const data = await res.json();
+  const files = data.files || [];
+  // Delete all beyond MAX_BACKUPS
+  const toDelete = files.slice(MAX_BACKUPS);
+  for(const f of toDelete) {
+    await fetch(`https://www.googleapis.com/drive/v3/files/${f.id}`, {
+      method: 'DELETE',
+      headers: {Authorization: `Bearer ${token}`}
+    });
+  }
+}
+
+async function performDriveBackup(uid, silent=false) {
+  const token = await getDriveToken(silent);
+  const data = await collectBackupData(uid);
+  const ts = new Date().toISOString().replace('T',' ').substring(0,16).replace(':','-');
+  const fileName = `גיבוי-${ts}.json`;
+  const fileContent = JSON.stringify(data, null, 2);
+  const folderId = await getOrCreateFolder(token);
+  await uploadBackupFile(token, folderId, fileName, fileContent);
+  await pruneOldBackups(token, folderId);
+  return fileName;
+}
 
 window.backupToDrive = async () => {
   const uid = me.role==='parent' ? viewUid : me.uid;
@@ -1311,67 +1389,124 @@ window.backupToDrive = async () => {
   const status = document.getElementById('backup-status');
   btn.disabled = true;
   status.textContent = 'מתחבר לגוגל...';
-
   try {
-    // Get OAuth token via Google Identity Services
-    driveAccessToken = await new Promise((resolve, reject) => {
-      const client = google.accounts.oauth2.initTokenClient({
-        client_id: window.GOOGLE_CLIENT_ID || (() => { throw new Error('נדרש Google Client ID'); })(),
-        scope: 'https://www.googleapis.com/auth/drive.file',
-        callback: (resp) => {
-          if(resp.error) reject(new Error(resp.error));
-          else resolve(resp.access_token);
-        }
-      });
-      client.requestAccessToken();
-    });
-
-    status.textContent = 'מכין נתונים...';
-    const data = await collectBackupData(uid);
-    const fileName = `כסף-גיבוי-${new Date().toISOString().split('T')[0]}.json`;
-    const content = JSON.stringify(data, null, 2);
-
-    // Check if file already exists
-    const searchRes = await fetch(
-      `https://www.googleapis.com/drive/v3/files?q=name='${fileName}' and trashed=false`,
-      {headers: {Authorization: `Bearer ${driveAccessToken}`}}
-    );
-    const searchData = await searchRes.json();
-    const existingId = searchData.files?.[0]?.id;
-
-    status.textContent = 'מעלה לדרייב...';
-    const blob = new Blob([content], {type:'application/json'});
-    const form = new FormData();
-    form.append('metadata', new Blob([JSON.stringify({name: fileName, mimeType:'application/json'})], {type:'application/json'}));
-    form.append('file', blob);
-
-    const uploadUrl = existingId
-      ? `https://www.googleapis.com/upload/drive/v3/files/${existingId}?uploadType=multipart`
-      : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
-    const method = existingId ? 'PATCH' : 'POST';
-
-    const uploadRes = await fetch(uploadUrl, {
-      method,
-      headers: {Authorization: `Bearer ${driveAccessToken}`},
-      body: form
-    });
-
-    if(!uploadRes.ok) throw new Error('Upload failed');
-    status.textContent = `✓ גובה בהצלחה: ${fileName}`;
+    const fileName = await performDriveBackup(uid, false);
+    status.textContent = `✓ גובה: ${fileName} (נשמרים ${MAX_BACKUPS} אחרונים)`;
     toast('גיבוי לדרייב הצליח ☁️✓');
   } catch(e) {
     console.error('Drive backup error:', e);
-    if(e.message === 'popup_closed_by_user' || e.message?.includes('popup')) {
+    if(e.message?.includes('access_denied') || e.message?.includes('popup')) {
       status.textContent = 'הגיבוי בוטל';
-    } else if(e.message?.includes('idpiframe') || e.message?.includes('client_id')) {
-      status.textContent = '⚠️ נדרש הגדרת Google Client ID';
-      toast('נדרש Google Client ID — ראה הוראות','fail');
     } else {
       status.textContent = 'שגיאה בגיבוי — נסה שוב';
       toast('שגיאה בגיבוי לדרייב','fail');
     }
   } finally {
     btn.disabled = false;
+  }
+};
+
+// Auto-backup silently after each action (only if token already exists)
+async function autoBackupToDrive() {
+  if(!driveAccessToken) return; // Don't prompt, only backup if already authenticated
+  const uid = me.role==='parent' ? viewUid : me.uid;
+  if(!uid) return;
+  try {
+    await performDriveBackup(uid, true);
+    console.log('Auto-backup to Drive ✓');
+  } catch(e) {
+    console.warn('Auto-backup failed silently:', e);
+    driveAccessToken = null; // Token expired, clear it
+  }
+}
+
+// ── Restore from Drive ──
+window.restoreFromDrive = async () => {
+  const uid = me.role==='parent' ? viewUid : me.uid;
+  if(!uid) { toast('בחר ילד קודם','fail'); return; }
+  const btn = document.getElementById('drive-restore-btn');
+  const status = document.getElementById('backup-status');
+  btn.disabled = true;
+  status.textContent = 'מתחבר לגוגל...';
+  try {
+    const token = await getDriveToken(false);
+    status.textContent = 'מחפש גיבויים...';
+    const folderId = await getOrCreateFolder(token);
+    const res = await fetch(
+      `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents and trashed=false&orderBy=createdTime desc&fields=files(id,name,createdTime)`,
+      {headers: {Authorization: `Bearer ${token}`}}
+    );
+    const data = await res.json();
+    const files = data.files || [];
+    if(!files.length) { status.textContent = 'לא נמצאו גיבויים בדרייב'; btn.disabled=false; return; }
+
+    // Show restore modal
+    showRestoreModal(files, token, uid);
+    status.textContent = '';
+  } catch(e) {
+    console.error('Restore error:', e);
+    status.textContent = 'שגיאה בשחזור — נסה שוב';
+    toast('שגיאה בשחזור','fail');
+  } finally {
+    btn.disabled = false;
+  }
+};
+
+function showRestoreModal(files, token, uid) {
+  let modal = document.getElementById('restore-modal');
+  if(!modal) {
+    modal = document.createElement('div');
+    modal.id = 'restore-modal';
+    modal.className = 'modal-overlay';
+    document.body.appendChild(modal);
+  }
+  modal.innerHTML = `<div class="modal">
+    <h2>🔄 שחזור מגוגל דרייב</h2>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:14px">בחר גיבוי לשחזור. הנתונים יתווספו לקיים.</p>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+      ${files.map(f => {
+        const date = new Date(f.createdTime).toLocaleString('he-IL');
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:10px">
+          <div>
+            <div style="font-size:.85rem;font-weight:600">${f.name}</div>
+            <div style="font-size:.72rem;color:var(--muted)">${date}</div>
+          </div>
+          <button class="btn btn-gold btn-sm" onclick="doRestoreFile('${f.id}','${token}','${uid}')">שחזר</button>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-full" onclick="document.getElementById('restore-modal').classList.remove('open')">סגור</button>
+    </div>
+  </div>`;
+  modal.classList.add('open');
+}
+
+window.doRestoreFile = async (fileId, token, uid) => {
+  const confirmed = confirm('שחזור יוסיף את הנתונים מהגיבוי לקיים. להמשיך?');
+  if(!confirmed) return;
+  document.getElementById('restore-modal').classList.remove('open');
+  toast('משחזר נתונים...','info');
+  try {
+    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+      headers: {Authorization: `Bearer ${token}`}
+    });
+    const data = await res.json();
+    let txCount=0, goalCount=0;
+    for(const tx of (data.transactions||[])) {
+      const {id,...rest} = tx;
+      await addDoc(userCol(uid,'transactions'), {...rest, createdAt:serverTimestamp()});
+      txCount++;
+    }
+    for(const g of (data.goals||[])) {
+      const {id,...rest} = g;
+      await addDoc(userCol(uid,'goals'), {...rest, createdAt:serverTimestamp()});
+      goalCount++;
+    }
+    toast(`שוחזרו ${txCount} פעולות ו-${goalCount} יעדים ✓`);
+  } catch(e) {
+    console.error('Restore file error:', e);
+    toast('שגיאה בשחזור הקובץ','fail');
   }
 };
 
