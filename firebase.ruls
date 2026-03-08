@@ -527,7 +527,7 @@ import {
 // 3. צור "OAuth 2.0 Client ID" מסוג Web Application
 // 4. הוסף את הדומיין שלך ל-Authorized JavaScript origins
 // 5. העתק את ה-Client ID לכאן:
-window.GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+window.GOOGLE_CLIENT_ID = '450727973112-rpkbkv7fpp413mtinsu9igf7f92ue9c7.apps.googleusercontent.com';
 
 const fbApp = initializeApp({
   apiKey:"AIzaSyB7CP_JYF37lC7x0YGujBO42PhGsoesk74",
