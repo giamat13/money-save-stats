@@ -169,6 +169,8 @@ tr:hover td{background:rgba(240,180,41,.025);}
 .divider{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:.8rem;margin:4px 0;}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
 </style>
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -447,6 +449,18 @@ tr:hover td{background:rgba(240,180,41,.025);}
         <button class="btn btn-green btn-full" onclick="showAddParentModal()">👨‍👩‍👧 הוסף הורה</button>
         <div id="connected-parents-display" style="margin-top:8px;font-size:.78rem;color:var(--muted)"></div>
       </div>
+      <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:2px">
+        <div style="font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">גיבוי נתונים</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn btn-ghost btn-full" onclick="exportJSON()">📥 ייצוא JSON (הורדה)</button>
+          <label class="btn btn-ghost btn-full" style="cursor:pointer;text-align:center">
+            📤 ייבוא JSON
+            <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(event)" />
+          </label>
+          <button class="btn btn-ghost btn-full" id="drive-backup-btn" onclick="backupToDrive()">☁️ גיבוי לגוגל דרייב</button>
+        </div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:6px;text-align:center" id="backup-status"></div>
+      </div>
       <button class="btn btn-blue btn-full" onclick="showResetModal();document.getElementById('settings-modal').classList.remove('open')">🔑 שנה סיסמה / אפס סיסמה</button>
       <button class="btn btn-red btn-full" onclick="confirmDeleteAccount()">🗑️ מחק חשבון לצמיתות</button>
     </div>
@@ -505,6 +519,15 @@ import {
   getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs,
   deleteDoc, onSnapshot, query, where, orderBy, serverTimestamp, updateDoc, arrayUnion, writeBatch
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+// ── Google OAuth Client ID ──
+// כדי להפעיל גיבוי לדרייב:
+// 1. לך ל: https://console.cloud.google.com/apis/credentials
+// 2. בחר בפרויקט money-save-stats
+// 3. צור "OAuth 2.0 Client ID" מסוג Web Application
+// 4. הוסף את הדומיין שלך ל-Authorized JavaScript origins
+// 5. העתק את ה-Client ID לכאן:
+window.GOOGLE_CLIENT_ID = '450727973112-rpkbkv7fpp413mtinsu9igf7f92ue9c7.apps.googleusercontent.com';
 
 const fbApp = initializeApp({
   apiKey:"AIzaSyB7CP_JYF37lC7x0YGujBO42PhGsoesk74",
@@ -1205,6 +1228,153 @@ onAuthStateChanged(auth, async (u) => {
     await launchApp();
   }
 });
+
+// ── Backup / Export / Import ──
+
+// Collect all data for current user (child) or viewed child (parent)
+async function collectBackupData(uid) {
+  const txSnap = await getDocs(userCol(uid,'transactions'));
+  const goalSnap = await getDocs(userCol(uid,'goals'));
+  const allowSnap = await getDoc(doc(db,`users/${uid}/settings/allowance`));
+  return {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    uid,
+    transactions: txSnap.docs.map(d=>({id:d.id,...d.data(),createdAt:d.data().createdAt?.toDate?.().toISOString?.()})),
+    goals: goalSnap.docs.map(d=>({id:d.id,...d.data(),createdAt:d.data().createdAt?.toDate?.().toISOString?.()})),
+    allowance: allowSnap.exists() ? allowSnap.data() : null
+  };
+}
+
+window.exportJSON = async () => {
+  const uid = me.role==='parent' ? viewUid : me.uid;
+  if(!uid) { toast('בחר ילד קודם','fail'); return; }
+  document.getElementById('backup-status').textContent = 'מייצא...';
+  try {
+    const data = await collectBackupData(uid);
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    document.getElementById('backup-status').textContent = '✓ קובץ הורד בהצלחה';
+    toast('גיבוי הורד ✓');
+  } catch(e) {
+    document.getElementById('backup-status').textContent = 'שגיאה בייצוא';
+    toast('שגיאה בייצוא','fail');
+  }
+};
+
+window.importJSON = async (event) => {
+  const file = event.target.files[0];
+  if(!file) return;
+  const uid = me.role==='parent' ? viewUid : me.uid;
+  if(!uid) { toast('בחר ילד קודם','fail'); return; }
+  const confirmed = confirm('ייבוא יוסיף את כל הפעולות והיעדים מהקובץ (לא ימחק קיים). להמשיך?');
+  if(!confirmed) { event.target.value=''; return; }
+  document.getElementById('backup-status').textContent = 'מייבא...';
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    let txCount = 0, goalCount = 0;
+    // Import transactions
+    for(const tx of (data.transactions||[])) {
+      const {id,...rest} = tx;
+      await addDoc(userCol(uid,'transactions'), {...rest, createdAt:serverTimestamp()});
+      txCount++;
+    }
+    // Import goals
+    for(const g of (data.goals||[])) {
+      const {id,...rest} = g;
+      await addDoc(userCol(uid,'goals'), {...rest, createdAt:serverTimestamp()});
+      goalCount++;
+    }
+    document.getElementById('backup-status').textContent = `✓ יובאו ${txCount} פעולות ו-${goalCount} יעדים`;
+    toast(`יובאו ${txCount} פעולות ✓`);
+    event.target.value = '';
+  } catch(e) {
+    document.getElementById('backup-status').textContent = 'שגיאה בייבוא — קובץ לא תקין';
+    toast('קובץ לא תקין','fail');
+    event.target.value = '';
+  }
+};
+
+// ── Google Drive backup ──
+let driveAccessToken = null;
+
+window.backupToDrive = async () => {
+  const uid = me.role==='parent' ? viewUid : me.uid;
+  if(!uid) { toast('בחר ילד קודם','fail'); return; }
+  const btn = document.getElementById('drive-backup-btn');
+  const status = document.getElementById('backup-status');
+  btn.disabled = true;
+  status.textContent = 'מתחבר לגוגל...';
+
+  try {
+    // Get OAuth token via Google Identity Services
+    driveAccessToken = await new Promise((resolve, reject) => {
+      const client = google.accounts.oauth2.initTokenClient({
+        client_id: window.GOOGLE_CLIENT_ID || (() => { throw new Error('נדרש Google Client ID'); })(),
+        scope: 'https://www.googleapis.com/auth/drive.file',
+        callback: (resp) => {
+          if(resp.error) reject(new Error(resp.error));
+          else resolve(resp.access_token);
+        }
+      });
+      client.requestAccessToken();
+    });
+
+    status.textContent = 'מכין נתונים...';
+    const data = await collectBackupData(uid);
+    const fileName = `כסף-גיבוי-${new Date().toISOString().split('T')[0]}.json`;
+    const content = JSON.stringify(data, null, 2);
+
+    // Check if file already exists
+    const searchRes = await fetch(
+      `https://www.googleapis.com/drive/v3/files?q=name='${fileName}' and trashed=false`,
+      {headers: {Authorization: `Bearer ${driveAccessToken}`}}
+    );
+    const searchData = await searchRes.json();
+    const existingId = searchData.files?.[0]?.id;
+
+    status.textContent = 'מעלה לדרייב...';
+    const blob = new Blob([content], {type:'application/json'});
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify({name: fileName, mimeType:'application/json'})], {type:'application/json'}));
+    form.append('file', blob);
+
+    const uploadUrl = existingId
+      ? `https://www.googleapis.com/upload/drive/v3/files/${existingId}?uploadType=multipart`
+      : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+    const method = existingId ? 'PATCH' : 'POST';
+
+    const uploadRes = await fetch(uploadUrl, {
+      method,
+      headers: {Authorization: `Bearer ${driveAccessToken}`},
+      body: form
+    });
+
+    if(!uploadRes.ok) throw new Error('Upload failed');
+    status.textContent = `✓ גובה בהצלחה: ${fileName}`;
+    toast('גיבוי לדרייב הצליח ☁️✓');
+  } catch(e) {
+    console.error('Drive backup error:', e);
+    if(e.message === 'popup_closed_by_user' || e.message?.includes('popup')) {
+      status.textContent = 'הגיבוי בוטל';
+    } else if(e.message?.includes('idpiframe') || e.message?.includes('client_id')) {
+      status.textContent = '⚠️ נדרש הגדרת Google Client ID';
+      toast('נדרש Google Client ID — ראה הוראות','fail');
+    } else {
+      status.textContent = 'שגיאה בגיבוי — נסה שוב';
+      toast('שגיאה בגיבוי לדרייב','fail');
+    }
+  } finally {
+    btn.disabled = false;
+  }
+};
+
 </script>
 </body>
 </html>
