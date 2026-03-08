@@ -7,273 +7,372 @@
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #080c16;
-  --surface: #0f1623;
-  --surface2: #161f30;
-  --border: #1e2d45;
-  --gold: #f0b429;
-  --gold-dim: rgba(240,180,41,0.12);
-  --green: #10b981;
-  --red: #f43f5e;
-  --blue: #38bdf8;
-  --purple: #c084fc;
-  --text: #e8f0ff;
-  --muted: #5a6a88;
-  --radius: 14px;
+  --bg:#080c16; --surface:#0f1623; --surface2:#161f30; --border:#1e2d45;
+  --gold:#f0b429; --gold-dim:rgba(240,180,41,0.12);
+  --green:#10b981; --red:#f43f5e; --blue:#38bdf8; --purple:#c084fc;
+  --orange:#fb923c; --text:#e8f0ff; --muted:#5a6a88; --radius:14px;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Heebo',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 
-#auth-screen {
-  display:flex; align-items:center; justify-content:center; min-height:100vh;
-  background: radial-gradient(ellipse 80% 60% at 50% -10%, #112244 0%, var(--bg) 70%);
-}
-.auth-box {
-  background:var(--surface); border:1px solid var(--border); border-radius:24px;
-  padding:48px 40px; max-width:400px; width:90%;
-  box-shadow:0 40px 80px rgba(0,0,0,0.6);
-}
-.auth-logo { text-align:center; font-size:3rem; margin-bottom:12px; }
-.auth-box h1 { text-align:center; font-size:1.7rem; font-weight:900; margin-bottom:4px; }
-.auth-box .sub { text-align:center; color:var(--muted); font-size:.9rem; margin-bottom:32px; }
-.auth-tabs { display:flex; gap:0; margin-bottom:28px; background:var(--bg); border-radius:10px; padding:4px; }
-.auth-tab {
-  flex:1; padding:9px; text-align:center; font-size:.9rem; font-weight:600;
-  cursor:pointer; border-radius:8px; transition:.2s; color:var(--muted); user-select:none;
-}
-.auth-tab.active { background:var(--gold); color:#000; }
-.auth-form { display:flex; flex-direction:column; gap:14px; }
-.auth-form input {
-  background:var(--bg); border:1px solid var(--border); border-radius:10px;
-  padding:13px 16px; color:var(--text); font-family:'Heebo',sans-serif; font-size:.95rem;
-  outline:none; transition:border-color .2s; direction:ltr; text-align:right;
-}
-.auth-form input:focus { border-color:var(--gold); }
-.auth-form input::placeholder { color:var(--muted); }
-#auth-error { color:var(--red); font-size:.85rem; text-align:center; min-height:20px; }
-.btn {
-  padding:12px 20px; border-radius:10px; font-family:'Heebo',sans-serif;
-  font-weight:700; font-size:.95rem; cursor:pointer; border:none;
-  transition:all .2s; display:inline-flex; align-items:center; gap:8px;
-}
-.btn-gold { background:var(--gold); color:#000; }
-.btn-gold:hover { background:#e0a820; transform:translateY(-1px); box-shadow:0 6px 20px rgba(240,180,41,0.3); }
-.btn-ghost { background:transparent; color:var(--muted); border:1px solid var(--border); }
-.btn-ghost:hover { border-color:var(--gold); color:var(--gold); }
-.btn-danger { background:rgba(244,63,94,0.15); color:var(--red); border:1px solid rgba(244,63,94,0.3); }
-.btn-danger:hover { background:rgba(244,63,94,0.25); }
-.btn-full { width:100%; justify-content:center; }
-.btn-sm { padding:7px 14px; font-size:.83rem; }
+/* ── SCREENS ── */
+.screen{display:none;align-items:center;justify-content:center;min-height:100vh;
+  background:radial-gradient(ellipse 80% 60% at 50% -10%,#112244 0%,var(--bg) 70%);}
+.screen.active{display:flex;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:24px;
+  padding:44px 40px;max-width:420px;width:92%;box-shadow:0 40px 80px rgba(0,0,0,.6);}
+.card-wide{max-width:520px;}
+.logo{text-align:center;font-size:3rem;margin-bottom:10px;}
+.card h1{text-align:center;font-size:1.7rem;font-weight:900;margin-bottom:4px;}
+.card .sub{text-align:center;color:var(--muted);font-size:.88rem;margin-bottom:28px;line-height:1.5;}
 
-#app { display:none; }
-nav {
-  position:sticky; top:0; z-index:100;
-  background:rgba(8,12,22,0.92); backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border);
-  padding:0 28px; height:60px;
-  display:flex; align-items:center; justify-content:space-between;
-}
-.nav-brand { font-weight:900; font-size:1.15rem; display:flex; align-items:center; gap:10px; }
-.nav-brand .coin { color:var(--gold); font-size:1.4rem; }
-.nav-user { color:var(--muted); font-size:.85rem; display:flex; align-items:center; gap:12px; }
-.container { max-width:1080px; margin:0 auto; padding:28px 24px; }
-.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin-bottom:28px; }
-.stat-card {
-  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-  padding:22px 20px; position:relative; overflow:hidden; transition:.2s;
-}
-.stat-card:hover { border-color:rgba(240,180,41,0.4); transform:translateY(-2px); }
-.stat-glow {
-  position:absolute; top:-20px; left:-20px; width:80px; height:80px;
-  border-radius:50%; opacity:.1; filter:blur(20px);
-}
-.stat-label { font-size:.78rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; }
-.stat-value { font-size:1.6rem; font-weight:900; font-family:'Space Mono',monospace; }
-.stat-sub { font-size:.78rem; color:var(--muted); margin-top:4px; }
-.main-grid { display:grid; grid-template-columns:1fr 360px; gap:20px; align-items:start; }
-@media(max-width:800px) { .main-grid { grid-template-columns:1fr; } }
-.section { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
-.section-header {
-  padding:18px 22px; border-bottom:1px solid var(--border);
-  display:flex; justify-content:space-between; align-items:center;
-}
-.section-title { font-weight:700; font-size:1rem; }
-.filters { display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:14px 22px; border-bottom:1px solid var(--border); }
-.filter-btn {
-  padding:5px 12px; border-radius:20px; font-size:.78rem; font-weight:600;
-  cursor:pointer; border:1px solid var(--border); background:transparent;
-  color:var(--muted); font-family:'Heebo',sans-serif; transition:.15s;
-}
-.filter-btn.active { background:var(--gold-dim); border-color:var(--gold); color:var(--gold); }
-table { width:100%; border-collapse:collapse; }
-th {
-  padding:12px 16px; text-align:right; font-size:.75rem; font-weight:700;
-  color:var(--muted); text-transform:uppercase; letter-spacing:.4px;
-  border-bottom:1px solid var(--border); background:var(--bg);
-}
-td { padding:11px 16px; font-size:.88rem; border-bottom:1px solid rgba(30,45,69,0.5); }
-tr:last-child td { border-bottom:none; }
-tr:hover td { background:rgba(240,180,41,0.03); }
-.tx-badge {
-  display:inline-block; padding:3px 8px; border-radius:6px; font-size:.72rem; font-weight:700;
-}
-.b-in { background:rgba(16,185,129,0.15); color:var(--green); }
-.b-out { background:rgba(244,63,94,0.15); color:var(--red); }
-.b-dep { background:rgba(56,189,248,0.15); color:var(--blue); }
-.b-wdraw { background:rgba(192,132,252,0.15); color:var(--purple); }
-.b-bal { background:rgba(240,180,41,0.15); color:var(--gold); }
-.a-in { color:var(--green); font-weight:700; font-family:'Space Mono',monospace; font-size:.82rem; }
-.a-out { color:var(--red); font-weight:700; font-family:'Space Mono',monospace; font-size:.82rem; }
-.a-neu { color:var(--muted); font-family:'Space Mono',monospace; font-size:.82rem; }
-.empty-state { text-align:center; padding:48px; color:var(--muted); }
-.sidebar { display:flex; flex-direction:column; gap:16px; }
-.form-section { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px; }
-.form-title { font-weight:700; font-size:.95rem; margin-bottom:18px; display:flex; align-items:center; gap:8px; }
-.form-group { margin-bottom:14px; }
-.form-label { font-size:.78rem; color:var(--muted); font-weight:600; margin-bottom:6px; display:block; }
-.form-control {
-  width:100%; background:var(--bg); border:1px solid var(--border);
-  border-radius:10px; padding:11px 14px; color:var(--text);
-  font-family:'Heebo',sans-serif; font-size:.9rem; outline:none; transition:.2s;
-}
-.form-control:focus { border-color:var(--gold); }
-.form-control option { background:var(--surface2); }
-.modal-overlay {
-  display:none; position:fixed; inset:0; z-index:200;
-  background:rgba(0,0,0,0.7); backdrop-filter:blur(4px);
-  align-items:center; justify-content:center;
-}
-.modal-overlay.open { display:flex; }
-.modal {
-  background:var(--surface); border:1px solid var(--border);
-  border-radius:20px; padding:32px; max-width:420px; width:90%;
-  box-shadow:0 40px 80px rgba(0,0,0,0.5);
-}
-.modal h2 { font-size:1.2rem; font-weight:900; margin-bottom:20px; }
-.modal-actions { display:flex; gap:10px; margin-top:20px; }
-.loader { text-align:center; padding:40px; color:var(--muted); }
-.spinner {
-  width:28px; height:28px; border:3px solid var(--border);
-  border-top-color:var(--gold); border-radius:50%;
-  animation:spin .8s linear infinite; margin:0 auto 10px;
-}
-@keyframes spin { to { transform:rotate(360deg); } }
-#toast {
-  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
-  background:var(--surface2); border:1px solid var(--border);
-  border-radius:12px; padding:12px 24px; font-size:.9rem; font-weight:600;
-  transition:.3s; z-index:999; pointer-events:none;
-}
-#toast.show { transform:translateX(-50%) translateY(0); }
-#toast.success { border-color:var(--green); color:var(--green); }
-#toast.error { border-color:var(--red); color:var(--red); }
-.goal-item { padding:12px 0; border-bottom:1px solid var(--border); }
-.goal-item:last-child { border-bottom:none; padding-bottom:0; }
-.goal-bar { height:6px; background:var(--bg); border-radius:100px; overflow:hidden; margin:6px 0; }
-.goal-fill { height:100%; border-radius:100px; background:linear-gradient(90deg,var(--blue),var(--purple)); transition:.6s; }
+/* ── TABS ── */
+.tabs{display:flex;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:24px;}
+.tab{flex:1;padding:9px;text-align:center;font-size:.88rem;font-weight:700;
+  cursor:pointer;border-radius:7px;color:var(--muted);transition:.2s;user-select:none;}
+.tab.active{background:var(--gold);color:#000;}
+
+/* ── ROLE CARDS ── */
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.role-card{border:2px solid var(--border);border-radius:14px;padding:20px 12px;
+  text-align:center;cursor:pointer;transition:.2s;}
+.role-card:hover{border-color:var(--gold);}
+.role-card.selected{border-color:var(--gold);background:var(--gold-dim);}
+.role-card .role-icon{font-size:2.2rem;margin-bottom:8px;}
+.role-card .role-name{font-weight:700;font-size:.95rem;}
+.role-card .role-desc{font-size:.75rem;color:var(--muted);margin-top:3px;}
+
+/* ── FORMS ── */
+.form-stack{display:flex;flex-direction:column;gap:12px;}
+input,select{background:var(--bg);border:1px solid var(--border);border-radius:10px;
+  padding:12px 15px;color:var(--text);font-family:'Heebo',sans-serif;font-size:.9rem;
+  outline:none;transition:border-color .2s;width:100%;direction:ltr;text-align:right;}
+input:focus,select:focus{border-color:var(--gold);}
+input::placeholder{color:var(--muted);}
+select option{background:var(--surface2);}
+.err{color:var(--red);font-size:.82rem;text-align:center;min-height:18px;}
+
+/* ── BUTTONS ── */
+.btn{padding:11px 18px;border-radius:10px;font-family:'Heebo',sans-serif;font-weight:700;
+  font-size:.9rem;cursor:pointer;border:none;transition:all .2s;
+  display:inline-flex;align-items:center;gap:7px;}
+.btn-gold{background:var(--gold);color:#000;}
+.btn-gold:hover{background:#e0a820;transform:translateY(-1px);box-shadow:0 6px 20px rgba(240,180,41,.3);}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+.btn-green{background:rgba(16,185,129,.2);color:var(--green);border:1px solid rgba(16,185,129,.3);}
+.btn-green:hover{background:rgba(16,185,129,.3);}
+.btn-red{background:rgba(244,63,94,.15);color:var(--red);border:1px solid rgba(244,63,94,.3);}
+.btn-red:hover{background:rgba(244,63,94,.25);}
+.btn-full{width:100%;justify-content:center;}
+.btn-sm{padding:6px 12px;font-size:.8rem;}
+
+/* ── WAITING SCREEN ── */
+.waiting-icon{font-size:4rem;text-align:center;margin-bottom:16px;
+  animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.05)}}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:100;background:rgba(8,12,22,.92);
+  backdrop-filter:blur(20px);border-bottom:1px solid var(--border);
+  padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+.nav-brand{font-weight:900;font-size:1.1rem;display:flex;align-items:center;gap:9px;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-user{color:var(--muted);font-size:.82rem;}
+.child-switcher{display:flex;gap:6px;align-items:center;}
+.child-btn{padding:5px 12px;border-radius:20px;font-size:.78rem;font-weight:600;
+  cursor:pointer;border:1px solid var(--border);background:transparent;
+  color:var(--muted);font-family:'Heebo',sans-serif;transition:.15s;}
+.child-btn.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
+
+/* ── CONTAINER ── */
+.container{max-width:1080px;margin:0 auto;padding:24px 20px;}
+
+/* ── BANNER ── */
+.banner{border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.banner-orange{background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.3);}
+.banner-blue{background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);}
+.banner-title{font-weight:700;font-size:.9rem;}
+.banner-sub{font-size:.8rem;color:var(--muted);margin-top:2px;}
+
+/* ── REQUESTS ── */
+.req-item{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 0;border-bottom:1px solid var(--border);}
+.req-item:last-child{border-bottom:none;}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:22px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px 18px;position:relative;overflow:hidden;transition:.2s;}
+.stat-card:hover{border-color:rgba(240,180,41,.4);transform:translateY(-2px);}
+.stat-glow{position:absolute;top:-20px;left:-20px;width:70px;height:70px;
+  border-radius:50%;opacity:.1;filter:blur(18px);}
+.stat-label{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;}
+.stat-val{font-size:1.5rem;font-weight:900;font-family:'Space Mono',monospace;}
+.stat-sub{font-size:.72rem;color:var(--muted);margin-top:3px;}
+
+/* ── MAIN GRID ── */
+.main-grid{display:grid;grid-template-columns:1fr 350px;gap:18px;align-items:start;}
+@media(max-width:800px){.main-grid{grid-template-columns:1fr;}}
+
+/* ── SECTION ── */
+.section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:18px;}
+.section-hd{padding:16px 20px;border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;}
+.section-title{font-weight:700;font-size:.95rem;}
+
+/* ── FILTERS ── */
+.filters{display:flex;gap:7px;flex-wrap:wrap;padding:12px 20px;border-bottom:1px solid var(--border);}
+.filter-btn{padding:4px 11px;border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer;
+  border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Heebo',sans-serif;transition:.15s;}
+.filter-btn.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
+
+/* ── TABLE ── */
+table{width:100%;border-collapse:collapse;}
+th{padding:10px 14px;text-align:right;font-size:.72rem;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border);background:var(--bg);}
+td{padding:10px 14px;font-size:.85rem;border-bottom:1px solid rgba(30,45,69,.5);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(240,180,41,.025);}
+.badge{display:inline-block;padding:2px 7px;border-radius:6px;font-size:.7rem;font-weight:700;}
+.b-in{background:rgba(16,185,129,.15);color:var(--green);}
+.b-out{background:rgba(244,63,94,.15);color:var(--red);}
+.b-dep{background:rgba(56,189,248,.15);color:var(--blue);}
+.b-wd{background:rgba(192,132,252,.15);color:var(--purple);}
+.b-bal{background:rgba(240,180,41,.15);color:var(--gold);}
+.b-allow{background:rgba(251,146,60,.15);color:var(--orange);}
+.a-in{color:var(--green);font-weight:700;font-family:'Space Mono',monospace;font-size:.8rem;}
+.a-out{color:var(--red);font-weight:700;font-family:'Space Mono',monospace;font-size:.8rem;}
+.a-neu{color:var(--muted);font-family:'Space Mono',monospace;font-size:.8rem;}
+.a-allow{color:var(--orange);font-weight:700;font-family:'Space Mono',monospace;font-size:.8rem;}
+.empty{text-align:center;padding:40px;color:var(--muted);}
+
+/* ── SIDEBAR ── */
+.sidebar{display:flex;flex-direction:column;gap:16px;}
+.form-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.form-title{font-weight:700;font-size:.9rem;margin-bottom:16px;display:flex;align-items:center;gap:7px;}
+.form-group{margin-bottom:12px;}
+.form-label{font-size:.75rem;color:var(--muted);font-weight:600;margin-bottom:5px;display:block;}
+.goal-item{padding:10px 0;border-bottom:1px solid var(--border);}
+.goal-item:last-child{border-bottom:none;padding-bottom:0;}
+.goal-bar{height:5px;background:var(--bg);border-radius:100px;overflow:hidden;margin:5px 0;}
+.goal-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--blue),var(--purple));transition:.6s;}
+
+/* ── CHART ── */
+#chart-area{padding:18px;}
+
+/* ── ALLOWANCE CARD ── */
+.allowance-card{background:rgba(251,146,60,.07);border:1px solid rgba(251,146,60,.25);
+  border-radius:var(--radius);padding:18px;}
+.allowance-card .form-label{color:var(--orange);}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;
+  padding:30px;max-width:420px;width:92%;box-shadow:0 40px 80px rgba(0,0,0,.5);}
+.modal h2{font-size:1.1rem;font-weight:900;margin-bottom:18px;}
+.modal-actions{display:flex;gap:9px;margin-top:18px;}
+
+/* ── LOADER / TOAST ── */
+.loader{text-align:center;padding:36px;color:var(--muted);}
+.spinner{width:26px;height:26px;border:3px solid var(--border);border-top-color:var(--gold);
+  border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 8px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--surface2);border:1px solid var(--border);border-radius:12px;
+  padding:11px 22px;font-size:.88rem;font-weight:600;transition:.3s;z-index:999;pointer-events:none;}
+#toast.show{transform:translateX(-50%) translateY(0);}
+#toast.ok{border-color:var(--green);color:var(--green);}
+#toast.fail{border-color:var(--red);color:var(--red);}
+#toast.info{border-color:var(--orange);color:var(--orange);}
 </style>
 </head>
 <body>
 
-<!-- AUTH SCREEN -->
-<div id="auth-screen">
-  <div class="auth-box">
-    <div class="auth-logo">💰</div>
+<!-- ══ SCREEN 1: AUTH ══ -->
+<div class="screen active" id="s-auth">
+  <div class="card">
+    <div class="logo">💰</div>
     <h1>הכסף שלי</h1>
-    <p class="sub">מעקב חכם אחרי הכסף שלך</p>
-    <div class="auth-tabs">
-      <div class="auth-tab active" id="tab-login" onclick="switchTab('login')">כניסה</div>
-      <div class="auth-tab" id="tab-register" onclick="switchTab('register')">הרשמה</div>
+    <p class="sub">מעקב חכם לכל המשפחה</p>
+    <div class="tabs">
+      <div class="tab active" id="tab-login" onclick="switchAuthTab('login')">כניסה</div>
+      <div class="tab" id="tab-reg" onclick="switchAuthTab('reg')">הרשמה</div>
     </div>
-    <div class="auth-form">
-      <input type="email" id="auth-email" placeholder="אימייל" />
-      <input type="password" id="auth-password" placeholder="סיסמה" />
-      <input type="text" id="auth-name" placeholder="שם תצוגה" style="display:none" />
-      <div id="auth-error"></div>
-      <button class="btn btn-gold btn-full" onclick="doAuth()">
-        <span id="auth-btn-text">התחבר</span>
-      </button>
+
+    <!-- Login form -->
+    <div id="login-form" class="form-stack">
+      <input type="email" id="l-email" placeholder="אימייל" />
+      <input type="password" id="l-pass" placeholder="סיסמה" />
+      <div class="err" id="l-err"></div>
+      <button class="btn btn-gold btn-full" onclick="doLogin()">התחבר</button>
+    </div>
+
+    <!-- Register form -->
+    <div id="reg-form" class="form-stack" style="display:none">
+      <input type="text" id="r-name" placeholder="שם תצוגה" />
+      <input type="email" id="r-email" placeholder="אימייל" />
+      <input type="password" id="r-pass" placeholder="סיסמה (לפחות 6 תווים)" />
+      <div style="margin:4px 0 2px">
+        <div class="form-label" style="font-size:.78rem;color:var(--muted);font-weight:600;margin-bottom:8px">אני:</div>
+        <div class="role-grid">
+          <div class="role-card selected" id="role-parent" onclick="selectRole('parent')">
+            <div class="role-icon">👨‍👩‍👧</div>
+            <div class="role-name">הורה</div>
+            <div class="role-desc">מנהל ומאשר</div>
+          </div>
+          <div class="role-card" id="role-child" onclick="selectRole('child')">
+            <div class="role-icon">🧒</div>
+            <div class="role-name">ילד/ה</div>
+            <div class="role-desc">חוסך כסף</div>
+          </div>
+        </div>
+      </div>
+      <div class="err" id="r-err"></div>
+      <button class="btn btn-gold btn-full" onclick="doRegister()">הרשמה</button>
     </div>
   </div>
 </div>
 
-<!-- MAIN APP -->
-<div id="app">
+<!-- ══ SCREEN 2: LINK TO PARENT (child after registration) ══ -->
+<div class="screen" id="s-link">
+  <div class="card">
+    <div class="logo">🔗</div>
+    <h1>חיבור להורה</h1>
+    <p class="sub">כדי להתחיל, הכנס את האימייל של ההורה שלך.<br>הוא יצטרך לאשר את הבקשה.</p>
+    <div class="form-stack">
+      <input type="email" id="parent-email-input" placeholder="אימייל ההורה" />
+      <div class="err" id="link-err"></div>
+      <button class="btn btn-gold btn-full" onclick="sendLinkRequest()">שלח בקשה</button>
+      <button class="btn btn-ghost btn-full" onclick="doLogout()">התנתק</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 3: WAITING FOR APPROVAL ══ -->
+<div class="screen" id="s-waiting">
+  <div class="card">
+    <div class="waiting-icon">⏳</div>
+    <h1>ממתין לאישור</h1>
+    <p class="sub" id="waiting-msg">בקשת החיבור נשלחה להורה שלך.<br>ברגע שיאשר, תוכל להיכנס לאפליקציה.</p>
+    <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-ghost btn-full" onclick="checkApproval()">🔄 בדוק שוב</button>
+      <button class="btn btn-ghost btn-full" onclick="doLogout()">התנתק</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 4: PARENT — PENDING REQUESTS ══ -->
+<div class="screen" id="s-requests">
+  <div class="card card-wide">
+    <div class="logo">📬</div>
+    <h1>בקשות חיבור</h1>
+    <p class="sub">ילדים שביקשו להתחבר לחשבון שלך</p>
+    <div id="requests-list">
+      <div class="loader"><div class="spinner"></div></div>
+    </div>
+    <div style="margin-top:20px">
+      <button class="btn btn-ghost btn-full" onclick="doLogout()">התנתק</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+<div id="app" style="display:none">
   <nav>
-    <div class="nav-brand"><span class="coin">💰</span> הכסף שלי</div>
-    <div class="nav-user">
-      <span id="nav-user-name"></span>
-      <button class="btn btn-ghost btn-sm" onclick="logout()">יציאה</button>
+    <div class="nav-brand">
+      <span>💰</span>
+      <span id="nav-title">הכסף שלי</span>
+    </div>
+    <div class="nav-right">
+      <!-- Parent: child switcher -->
+      <div class="child-switcher" id="child-switcher" style="display:none"></div>
+      <div class="nav-user" id="nav-name"></div>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">יציאה</button>
     </div>
   </nav>
 
   <div class="container">
 
-    <!-- STAT CARDS -->
+    <!-- Viewing child banner -->
+    <div class="banner banner-blue" id="viewing-banner" style="display:none">
+      <div>
+        <div class="banner-title" id="viewing-name"></div>
+        <div class="banner-sub">אתה צופה בחשבון הילד שלך</div>
+      </div>
+    </div>
+
+    <!-- Pending requests banner (for parent with pending requests) -->
+    <div class="banner banner-orange" id="pending-banner" style="display:none">
+      <div>
+        <div class="banner-title">📬 יש בקשות חיבור ממתינות</div>
+        <div class="banner-sub" id="pending-banner-sub"></div>
+      </div>
+      <button class="btn btn-sm" style="background:var(--orange);color:#000;border:none" onclick="showScreen('s-requests');loadRequests()">טפל בבקשות</button>
+    </div>
+
+    <!-- STATS -->
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-glow" style="background:var(--gold)"></div>
-        <div class="stat-label">סה"כ נחסך</div>
-        <div class="stat-value" style="color:var(--gold)" id="stat-total">₪0</div>
-        <div class="stat-sub" id="stat-since"></div>
+        <div class="stat-label">סה״כ נחסך</div>
+        <div class="stat-val" style="color:var(--gold)" id="s-total">₪0</div>
+        <div class="stat-sub" id="s-since"></div>
       </div>
       <div class="stat-card">
         <div class="stat-glow" style="background:var(--green)"></div>
         <div class="stat-label">בבנק</div>
-        <div class="stat-value" style="color:var(--green)" id="stat-bank">₪0</div>
+        <div class="stat-val" style="color:var(--green)" id="s-bank">₪0</div>
         <div class="stat-sub">חיסכון בטוח</div>
       </div>
       <div class="stat-card">
         <div class="stat-glow" style="background:var(--blue)"></div>
         <div class="stat-label">בארנק</div>
-        <div class="stat-value" style="color:var(--blue)" id="stat-wallet">₪0</div>
+        <div class="stat-val" style="color:var(--blue)" id="s-wallet">₪0</div>
         <div class="stat-sub">מזומן</div>
       </div>
       <div class="stat-card">
         <div class="stat-glow" style="background:var(--purple)"></div>
-        <div class="stat-label">חיסכון לחודש</div>
-        <div class="stat-value" style="color:var(--purple)" id="stat-monthly">₪0</div>
-        <div class="stat-sub" id="stat-yearly"></div>
+        <div class="stat-label">חיסכון / חודש</div>
+        <div class="stat-val" style="color:var(--purple)" id="s-monthly">₪0</div>
+        <div class="stat-sub" id="s-yearly"></div>
       </div>
     </div>
 
     <!-- CHART -->
-    <div class="section" style="margin-bottom:20px">
-      <div class="section-header">
-        <div class="section-title">📊 הכנסות vs הוצאות — 6 חודשים אחרונים</div>
-      </div>
-      <div id="chart-area" style="padding:20px">
-        <div class="loader"><div class="spinner"></div></div>
-      </div>
+    <div class="section">
+      <div class="section-hd"><div class="section-title">📊 הכנסות vs הוצאות — 6 חודשים</div></div>
+      <div id="chart-area"><div class="loader"><div class="spinner"></div></div></div>
     </div>
 
     <div class="main-grid">
-      <!-- TRANSACTIONS TABLE -->
+      <!-- TRANSACTIONS -->
       <div>
         <div class="section">
-          <div class="section-header">
-            <div class="section-title">📋 פעולות</div>
-          </div>
-          <div class="filters">
+          <div class="section-hd"><div class="section-title">📋 פעולות</div></div>
+          <div class="filters" id="filter-bar">
             <button class="filter-btn active" onclick="setFilter('all',this)">הכל</button>
             <button class="filter-btn" onclick="setFilter('הכנסה',this)">הכנסות</button>
             <button class="filter-btn" onclick="setFilter('הוצאה',this)">הוצאות</button>
             <button class="filter-btn" onclick="setFilter('הפקדה',this)">הפקדות</button>
-            <button class="filter-btn" onclick="setFilter('משיכה',this)">משיכות</button>
+            <button class="filter-btn" onclick="setFilter('דמי כיס',this)">דמי כיס 🧡</button>
           </div>
-          <div id="tx-table-wrap">
-            <div class="loader"><div class="spinner"></div>טוען...</div>
-          </div>
+          <div id="tx-wrap"><div class="loader"><div class="spinner"></div></div></div>
         </div>
       </div>
 
       <!-- SIDEBAR -->
       <div class="sidebar">
-        <div class="form-section">
+
+        <!-- ADD TRANSACTION (hidden when viewing child as parent) -->
+        <div class="form-section" id="add-tx-panel">
           <div class="form-title">➕ פעולה חדשה</div>
           <div class="form-group">
             <label class="form-label">סוג פעולה</label>
-            <select class="form-control" id="tx-type">
+            <select id="tx-type">
               <option value="הכנסה">💚 הכנסה</option>
               <option value="הוצאה">🔴 הוצאה</option>
               <option value="הפקדה">🔵 הפקדה לבנק</option>
@@ -285,32 +384,65 @@ tr:hover td { background:rgba(240,180,41,0.03); }
           </div>
           <div class="form-group">
             <label class="form-label">סכום (₪)</label>
-            <input type="number" class="form-control" id="tx-amount" placeholder="0.00" step="0.01" min="0" />
+            <input type="number" id="tx-amount" placeholder="0.00" step="0.01" min="0" />
           </div>
           <div class="form-group">
             <label class="form-label">תיאור</label>
-            <input type="text" class="form-control" id="tx-desc" placeholder="למה זה?" />
+            <input type="text" id="tx-desc" placeholder="למה זה?" />
           </div>
           <div class="form-group">
             <label class="form-label">קטגוריה</label>
-            <input type="text" class="form-control" id="tx-cat" placeholder="ספרים, מתנות..." />
+            <input type="text" id="tx-cat" placeholder="ספרים, מתנות..." />
           </div>
           <div class="form-group">
             <label class="form-label">תאריך</label>
-            <input type="date" class="form-control" id="tx-date" />
+            <input type="date" id="tx-date" />
           </div>
           <button class="btn btn-gold btn-full" onclick="addTransaction()">שמור פעולה</button>
         </div>
 
+        <!-- ALLOWANCE (parent viewing child) -->
+        <div class="allowance-card" id="allowance-panel" style="display:none">
+          <div class="form-title" style="color:var(--orange)">🧡 דמי כיס שבועיים</div>
+          <div class="form-group">
+            <label class="form-label">סכום שבועי (₪)</label>
+            <input type="number" id="allow-amount" placeholder="0" step="0.5" min="0" style="margin-bottom:0" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">יום בשבוע</label>
+            <select id="allow-day">
+              <option value="0">ראשון</option>
+              <option value="5">שישי</option>
+              <option value="6">שבת</option>
+              <option value="1">שני</option>
+              <option value="2">שלישי</option>
+              <option value="3">רביעי</option>
+              <option value="4">חמישי</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">תיאור בפעולה</label>
+            <input type="text" id="allow-desc" placeholder="דמי כיס שבועיים" />
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
+            <input type="checkbox" id="allow-enabled" style="width:auto;direction:ltr" />
+            <label for="allow-enabled" style="font-size:.85rem;cursor:pointer">פעיל</label>
+          </div>
+          <button class="btn btn-full" style="background:var(--orange);color:#000;border:none" onclick="saveAllowance()">שמור הגדרות</button>
+          <div style="font-size:.75rem;color:var(--muted);margin-top:10px;text-align:center" id="allow-status"></div>
+        </div>
+
+        <!-- GOALS -->
         <div class="form-section">
           <div class="form-title" style="justify-content:space-between">
             <span>🎯 יעדי חיסכון</span>
-            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('goal-modal').classList.add('open')">+ יעד</button>
+            <button class="btn btn-ghost btn-sm" id="add-goal-btn" onclick="document.getElementById('goal-modal').classList.add('open')">+ יעד</button>
           </div>
           <div id="goals-list">
-            <div class="loader" style="padding:12px"><div class="spinner" style="width:20px;height:20px;margin-bottom:6px"></div></div>
+            <div class="loader" style="padding:10px"><div class="spinner" style="width:18px;height:18px;margin-bottom:4px"></div></div>
           </div>
         </div>
+
       </div>
     </div>
   </div>
@@ -321,12 +453,12 @@ tr:hover td { background:rgba(240,180,41,0.03); }
   <div class="modal">
     <h2>🎯 יעד חיסכון חדש</h2>
     <div class="form-group">
-      <label class="form-label">מה אתה חוסך עבורו?</label>
-      <input type="text" class="form-control" id="goal-name" placeholder="אייפון, נסיעה..." />
+      <label class="form-label">שם היעד</label>
+      <input type="text" id="g-name" placeholder="אייפון, נסיעה, ספר..." />
     </div>
     <div class="form-group">
       <label class="form-label">כמה עולה? (₪)</label>
-      <input type="number" class="form-control" id="goal-target" placeholder="0" />
+      <input type="number" id="g-target" placeholder="0" />
     </div>
     <div class="modal-actions">
       <button class="btn btn-gold" onclick="saveGoal()">שמור</button>
@@ -337,296 +469,539 @@ tr:hover td { background:rgba(240,180,41,0.03); }
 
 <div id="toast"></div>
 
+<!-- ══════════════════ FIREBASE + APP LOGIC ══════════════════ -->
 <script type="module">
-import { initializeApp }       from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
+import { initializeApp }           from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getAnalytics, logEvent }  from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
 import {
   getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
   signOut, onAuthStateChanged, updateProfile
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 import {
-  getFirestore, collection, addDoc, deleteDoc, doc,
-  onSnapshot, query, orderBy, serverTimestamp
+  getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs,
+  deleteDoc, onSnapshot, query, where, orderBy, serverTimestamp, updateDoc
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-// ── Init Firebase ──
-const app = initializeApp({
-  apiKey: "AIzaSyB7CP_JYF37lC7x0YGujBO42PhGsoesk74",
-  authDomain: "money-save-stats.firebaseapp.com",
-  projectId: "money-save-stats",
-  storageBucket: "money-save-stats.firebasestorage.app",
-  messagingSenderId: "450727973112",
-  appId: "1:450727973112:web:f700b9db3697f82fcfeb0d",
-  measurementId: "G-WR5VS0K6LT"
+// ── Init ──
+const fbApp   = initializeApp({
+  apiKey:"AIzaSyB7CP_JYF37lC7x0YGujBO42PhGsoesk74",
+  authDomain:"money-save-stats.firebaseapp.com",
+  projectId:"money-save-stats",
+  storageBucket:"money-save-stats.firebasestorage.app",
+  messagingSenderId:"450727973112",
+  appId:"1:450727973112:web:f700b9db3697f82fcfeb0d",
+  measurementId:"G-WR5VS0K6LT"
 });
-const analytics = getAnalytics(app);
-const auth      = getAuth(app);
-const db        = getFirestore(app);
+const analytics = getAnalytics(fbApp);
+const auth = getAuth(fbApp);
+const db   = getFirestore(fbApp);
 
 // ── State ──
-let user = null, transactions = [], goals = [], activeFilter = 'all';
+let me = null;          // { uid, email, displayName, role, parentUid, children:[] }
+let viewUid = null;     // which user's data we're viewing (self or child)
+let viewName = '';
+let transactions = [], goals = [];
+let activeFilter = 'all';
 let unsubTx = null, unsubGoals = null;
+let selectedRole = 'parent';
 
-// ── Utils ──
-const fmt = n => '₪' + Math.abs(Number(n)).toLocaleString('he-IL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-function showToast(msg, type='success') {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.className = 'show ' + type;
-  setTimeout(() => el.className = '', 2600);
+// ── Helpers ──
+const fmt = n => '₪' + Math.abs(Number(n)).toLocaleString('he-IL',{minimumFractionDigits:2,maximumFractionDigits:2});
+function toast(msg, type='ok'){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='show '+type;
+  setTimeout(()=>el.className='',2600);
 }
-const userCol = (sub) => collection(db, `users/${user.uid}/${sub}`);
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const s=document.getElementById(id);
+  if(s) s.classList.add('active');
+  document.getElementById('app').style.display='none';
+  if(id==='app-main'){document.getElementById('app').style.display='block'; return;}
+}
+const userDoc  = uid => doc(db,`users/${uid}`);
+const userCol  = (uid,sub) => collection(db,`users/${uid}/${sub}`);
 
-// ── Auth tab ──
-window.switchTab = (tab) => {
-  const isReg = tab === 'register';
-  document.getElementById('tab-login').classList.toggle('active', !isReg);
-  document.getElementById('tab-register').classList.toggle('active', isReg);
-  document.getElementById('auth-name').style.display = isReg ? 'block' : 'none';
-  document.getElementById('auth-btn-text').textContent = isReg ? 'הרשמה' : 'התחבר';
-  document.getElementById('auth-error').textContent = '';
+// ── Role selection ──
+window.selectRole = (r) => {
+  selectedRole = r;
+  document.getElementById('role-parent').classList.toggle('selected', r==='parent');
+  document.getElementById('role-child').classList.toggle('selected', r==='child');
 };
 
-window.doAuth = async () => {
-  const email    = document.getElementById('auth-email').value.trim();
-  const password = document.getElementById('auth-password').value;
-  const name     = document.getElementById('auth-name').value.trim();
-  const isReg    = document.getElementById('auth-name').style.display !== 'none';
-  const errEl    = document.getElementById('auth-error');
-  errEl.textContent = '';
-  if (!email || !password) { errEl.textContent = 'אנא מלא אימייל וסיסמה'; return; }
-  try {
-    if (isReg) {
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      if (name) await updateProfile(cred.user, { displayName: name });
-      logEvent(analytics, 'sign_up');
-    } else {
-      await signInWithEmailAndPassword(auth, email, password);
-      logEvent(analytics, 'login');
-    }
-  } catch (e) {
-    const map = {
-      'auth/email-already-in-use':'האימייל כבר רשום',
-      'auth/invalid-email':'אימייל לא תקין',
-      'auth/weak-password':'סיסמה חלשה — לפחות 6 תווים',
-      'auth/user-not-found':'משתמש לא נמצא',
-      'auth/wrong-password':'סיסמה שגויה',
-      'auth/invalid-credential':'אימייל או סיסמה שגויים',
-    };
-    errEl.textContent = map[e.code] || e.message;
+// ── Auth tabs ──
+window.switchAuthTab = (t) => {
+  const isReg = t==='reg';
+  document.getElementById('tab-login').classList.toggle('active',!isReg);
+  document.getElementById('tab-reg').classList.toggle('active',isReg);
+  document.getElementById('login-form').style.display = isReg?'none':'flex';
+  document.getElementById('reg-form').style.display   = isReg?'flex':'none';
+};
+
+// ── Login ──
+window.doLogin = async () => {
+  const email=document.getElementById('l-email').value.trim();
+  const pass =document.getElementById('l-pass').value;
+  const err  =document.getElementById('l-err');
+  err.textContent='';
+  if(!email||!pass){err.textContent='מלא אימייל וסיסמה';return;}
+  try { await signInWithEmailAndPassword(auth,email,pass); }
+  catch(e){
+    const m={'auth/invalid-credential':'אימייל או סיסמה שגויים','auth/user-not-found':'משתמש לא נמצא','auth/wrong-password':'סיסמה שגויה'};
+    err.textContent=m[e.code]||e.message;
   }
 };
 
-window.logout = async () => {
-  if (unsubTx) unsubTx();
-  if (unsubGoals) unsubGoals();
+// ── Register ──
+window.doRegister = async () => {
+  const name =document.getElementById('r-name').value.trim();
+  const email=document.getElementById('r-email').value.trim();
+  const pass =document.getElementById('r-pass').value;
+  const err  =document.getElementById('r-err');
+  err.textContent='';
+  if(!name||!email||!pass){err.textContent='מלא את כל השדות';return;}
+  try {
+    const cred = await createUserWithEmailAndPassword(auth,email,pass);
+    await updateProfile(cred.user,{displayName:name});
+    await setDoc(userDoc(cred.user.uid),{
+      uid:cred.user.uid, name, email, role:selectedRole,
+      parentUid:null, children:[], createdAt:serverTimestamp()
+    });
+    logEvent(analytics,'sign_up',{role:selectedRole});
+  } catch(e){
+    const m={'auth/email-already-in-use':'האימייל כבר רשום','auth/weak-password':'סיסמה חלשה','auth/invalid-email':'אימייל לא תקין'};
+    err.textContent=m[e.code]||e.message;
+  }
+};
+
+// ── Logout ──
+window.doLogout = async () => {
+  if(unsubTx) unsubTx();
+  if(unsubGoals) unsubGoals();
+  me=null; viewUid=null; transactions=[]; goals=[];
   await signOut(auth);
 };
 
-// ── Transactions ──
-window.addTransaction = async () => {
-  const type   = document.getElementById('tx-type').value;
-  const rawAmt = parseFloat(document.getElementById('tx-amount').value);
-  const desc   = document.getElementById('tx-desc').value.trim();
-  const cat    = document.getElementById('tx-cat').value.trim();
-  const dateV  = document.getElementById('tx-date').value;
-  if (!rawAmt || rawAmt <= 0) { showToast('הכנס סכום תקין', 'error'); return; }
-  const amount = (type === 'הוצאה' || type === 'הוצאת בנק') ? -Math.abs(rawAmt) : Math.abs(rawAmt);
-  await addDoc(userCol('transactions'), {
-    type, amount, desc, cat,
-    date: (dateV ? new Date(dateV) : new Date()).toISOString(),
-    createdAt: serverTimestamp()
+// ── Send link request (child → parent) ──
+window.sendLinkRequest = async () => {
+  const parentEmail=document.getElementById('parent-email-input').value.trim().toLowerCase();
+  const err=document.getElementById('link-err');
+  err.textContent='';
+  if(!parentEmail){err.textContent='הכנס אימייל הורה';return;}
+  if(parentEmail===me.email){err.textContent='לא יכול להיות ההורה של עצמך 😅';return;}
+  // Find parent by email
+  const q=query(collection(db,'users'),where('email','==',parentEmail),where('role','==','parent'));
+  const snap=await getDocs(q);
+  if(snap.empty){err.textContent='לא נמצא הורה עם האימייל הזה';return;}
+  const parentData=snap.docs[0].data();
+  const parentUid=snap.docs[0].id;
+  // Check if already linked
+  if(me.parentUid){err.textContent='כבר מחובר להורה';return;}
+  // Check for existing pending request
+  const reqQ=query(collection(db,'connectionRequests'),where('childUid','==',me.uid),where('status','==','pending'));
+  const existSnap=await getDocs(reqQ);
+  if(!existSnap.empty){
+    document.getElementById('waiting-msg').textContent=`בקשה נשלחה ל-${parentEmail}. ממתין לאישור...`;
+    showScreen('s-waiting'); return;
+  }
+  await addDoc(collection(db,'connectionRequests'),{
+    childUid:me.uid, childName:me.name, childEmail:me.email,
+    parentUid, parentEmail, status:'pending', createdAt:serverTimestamp()
   });
-  document.getElementById('tx-amount').value = '';
-  document.getElementById('tx-desc').value   = '';
-  document.getElementById('tx-cat').value    = '';
-  logEvent(analytics, 'add_transaction', { type });
-  showToast('נשמר! ✓');
+  document.getElementById('waiting-msg').textContent=`בקשה נשלחה ל-${parentEmail}. ממתין לאישור...`;
+  showScreen('s-waiting');
+};
+
+// ── Check approval ──
+window.checkApproval = async () => {
+  const d=await getDoc(userDoc(me.uid));
+  const data=d.data();
+  if(data.parentUid){
+    me={...me,...data};
+    launchApp();
+  } else {
+    toast('עדיין לא אושרת ⏳','info');
+  }
+};
+
+// ── Load requests (parent) ──
+window.loadRequests = async () => {
+  const wrap=document.getElementById('requests-list');
+  wrap.innerHTML='<div class="loader"><div class="spinner"></div></div>';
+  const q=query(collection(db,'connectionRequests'),where('parentUid','==',me.uid),where('status','==','pending'));
+  const snap=await getDocs(q);
+  if(snap.empty){wrap.innerHTML='<p style="color:var(--muted);text-align:center;padding:16px">אין בקשות ממתינות</p>';return;}
+  wrap.innerHTML=snap.docs.map(d=>{
+    const r=d.data();
+    return `<div class="req-item">
+      <div>
+        <div style="font-weight:700">${r.childName}</div>
+        <div style="font-size:.8rem;color:var(--muted)">${r.childEmail}</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-green btn-sm" onclick="approveRequest('${d.id}','${r.childUid}','${r.childName}')">אשר ✓</button>
+        <button class="btn btn-red btn-sm" onclick="rejectRequest('${d.id}')">דחה ✕</button>
+      </div>
+    </div>`;
+  }).join('');
+};
+
+window.approveRequest = async (reqId, childUid, childName) => {
+  // Update request status
+  await updateDoc(doc(db,'connectionRequests',reqId),{status:'approved'});
+  // Set child's parentUid
+  await updateDoc(userDoc(childUid),{parentUid:me.uid});
+  // Add child to parent's children array
+  const myData=(await getDoc(userDoc(me.uid))).data();
+  const children=[...(myData.children||[]),{uid:childUid,name:childName}];
+  await updateDoc(userDoc(me.uid),{children});
+  me.children=children;
+  toast(`${childName} אושר! 🎉`);
+  loadRequests();
+  buildChildSwitcher();
+  document.getElementById('pending-banner').style.display='none';
+};
+
+window.rejectRequest = async (reqId) => {
+  await updateDoc(doc(db,'connectionRequests',reqId),{status:'rejected'});
+  toast('בקשה נדחתה');
+  loadRequests();
+};
+
+// ── Launch app ──
+async function launchApp() {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('app').style.display='block';
+  document.getElementById('nav-name').textContent=me.name||me.email;
+
+  // Start viewing self
+  viewUid=me.uid; viewName=me.name;
+  document.getElementById('viewing-banner').style.display='none';
+  document.getElementById('tx-date').value=new Date().toISOString().split('T')[0];
+
+  if(me.role==='parent'){
+    buildChildSwitcher();
+    checkPendingRequests();
+  }
+
+  // Check allowance if child
+  if(me.role==='child' && me.parentUid){
+    await checkAndPayAllowance(me.uid);
+  }
+
+  subscribeData();
+}
+
+// ── Build child switcher (parent) ──
+function buildChildSwitcher(){
+  const sw=document.getElementById('child-switcher');
+  if(!me.children||!me.children.length){sw.style.display='none';return;}
+  sw.style.display='flex';
+  sw.innerHTML=`<button class="child-btn active" id="sw-self" onclick="switchView('${me.uid}','${me.name}',this)">שלי</button>`
+    +me.children.map(c=>`<button class="child-btn" id="sw-${c.uid}" onclick="switchView('${c.uid}','${c.name}',this)">${c.name}</button>`).join('');
+}
+
+// ── Switch view ──
+window.switchView = (uid, name, btn) => {
+  document.querySelectorAll('.child-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(unsubTx) unsubTx();
+  if(unsubGoals) unsubGoals();
+  viewUid=uid; viewName=name;
+  transactions=[]; goals=[];
+  const isChild = uid!==me.uid;
+  document.getElementById('viewing-banner').style.display=isChild?'flex':'none';
+  if(isChild) document.getElementById('viewing-name').textContent=`👀 צופה ב: ${name}`;
+  document.getElementById('add-tx-panel').style.display=isChild?'none':'block';
+  document.getElementById('allowance-panel').style.display=isChild?'block':'none';
+  document.getElementById('add-goal-btn').style.display=isChild?'none':'flex';
+  if(isChild) loadAllowanceSettings(uid);
+  // Also check allowance for child
+  if(isChild) checkAndPayAllowance(uid);
+  subscribeData();
+};
+
+// ── Check pending requests ──
+async function checkPendingRequests(){
+  const q=query(collection(db,'connectionRequests'),where('parentUid','==',me.uid),where('status','==','pending'));
+  const snap=await getDocs(q);
+  if(!snap.empty){
+    document.getElementById('pending-banner').style.display='flex';
+    document.getElementById('pending-banner-sub').textContent=`${snap.size} בקשה ממתינה לאישור`;
+  }
+}
+
+// ── Allowance ──
+async function checkAndPayAllowance(childUid){
+  try {
+    const settingsRef=doc(db,`users/${childUid}/settings/allowance`);
+    const settingsSnap=await getDoc(settingsRef);
+    if(!settingsSnap.exists()) return;
+    const s=settingsSnap.data();
+    if(!s.enabled||!s.amount||s.amount<=0) return;
+    const now=new Date();
+    const lastPaid=s.lastPaid ? s.lastPaid.toDate() : null;
+    const daysSince=lastPaid ? (now-lastPaid)/(1000*60*60*24) : 999;
+    if(daysSince>=7){
+      // Pay allowance
+      const desc=s.desc||'דמי כיס שבועיים';
+      await addDoc(userCol(childUid,'transactions'),{
+        type:'דמי כיס', amount:Math.abs(s.amount), desc,
+        cat:'דמי כיס', date:now.toISOString(), createdAt:serverTimestamp(), isAllowance:true
+      });
+      await updateDoc(settingsRef,{lastPaid:serverTimestamp()});
+      if(childUid===me.uid) toast(`קיבלת דמי כיס: ${fmt(s.amount)} 🧡`,'info');
+    }
+  } catch(e){ console.warn('allowance check failed',e); }
+}
+
+window.loadAllowanceSettings = async (childUid) => {
+  const ref=doc(db,`users/${childUid}/settings/allowance`);
+  const snap=await getDoc(ref);
+  const s=snap.exists()?snap.data():{};
+  document.getElementById('allow-amount').value=s.amount||'';
+  document.getElementById('allow-day').value=s.dayOfWeek??0;
+  document.getElementById('allow-desc').value=s.desc||'דמי כיס שבועיים';
+  document.getElementById('allow-enabled').checked=s.enabled||false;
+  if(s.lastPaid){
+    const d=s.lastPaid.toDate();
+    document.getElementById('allow-status').textContent=`תשלום אחרון: ${d.toLocaleDateString('he-IL')}`;
+  }
+};
+
+window.saveAllowance = async () => {
+  const amount=parseFloat(document.getElementById('allow-amount').value)||0;
+  const dayOfWeek=parseInt(document.getElementById('allow-day').value);
+  const desc=document.getElementById('allow-desc').value.trim()||'דמי כיס שבועיים';
+  const enabled=document.getElementById('allow-enabled').checked;
+  const ref=doc(db,`users/${viewUid}/settings/allowance`);
+  await setDoc(ref,{amount,dayOfWeek,desc,enabled},{merge:true});
+  toast('הגדרות דמי כיס נשמרו 🧡');
+  loadAllowanceSettings(viewUid);
+};
+
+// ── Subscribe to data ──
+function subscribeData(){
+  const txQ=query(userCol(viewUid,'transactions'),orderBy('createdAt','desc'));
+  unsubTx=onSnapshot(txQ, snap=>{
+    transactions=snap.docs.map(d=>({id:d.id,...d.data()}));
+    computeStats(); renderTable(); renderGoals(); renderChart();
+  });
+  unsubGoals=onSnapshot(userCol(viewUid,'goals'), snap=>{
+    goals=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderGoals();
+  });
+}
+
+// ── Filter ──
+window.setFilter = (f,el)=>{
+  activeFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active'); renderTable();
+};
+
+// ── Add transaction ──
+window.addTransaction = async () => {
+  const type=document.getElementById('tx-type').value;
+  const raw=parseFloat(document.getElementById('tx-amount').value);
+  const desc=document.getElementById('tx-desc').value.trim();
+  const cat=document.getElementById('tx-cat').value.trim();
+  const dateV=document.getElementById('tx-date').value;
+  if(!raw||raw<=0){toast('הכנס סכום תקין','fail');return;}
+  const amount=(type==='הוצאה'||type==='הוצאת בנק')?-Math.abs(raw):Math.abs(raw);
+  await addDoc(userCol(viewUid,'transactions'),{
+    type,amount,desc,cat,
+    date:(dateV?new Date(dateV):new Date()).toISOString(),
+    createdAt:serverTimestamp()
+  });
+  document.getElementById('tx-amount').value='';
+  document.getElementById('tx-desc').value='';
+  document.getElementById('tx-cat').value='';
+  logEvent(analytics,'add_transaction',{type});
+  toast('נשמר ✓');
 };
 
 window.deleteTransaction = async (id) => {
-  if (!confirm('למחוק?')) return;
-  await deleteDoc(doc(db, `users/${user.uid}/transactions`, id));
-  showToast('נמחק');
+  if(!confirm('למחוק?')) return;
+  await deleteDoc(doc(db,`users/${viewUid}/transactions`,id));
+  toast('נמחק');
 };
 
 // ── Goals ──
 window.saveGoal = async () => {
-  const name   = document.getElementById('goal-name').value.trim();
-  const target = parseFloat(document.getElementById('goal-target').value);
-  if (!name || !target) { showToast('מלא שם וסכום', 'error'); return; }
-  await addDoc(userCol('goals'), { name, target, createdAt: serverTimestamp() });
-  document.getElementById('goal-name').value   = '';
-  document.getElementById('goal-target').value = '';
+  const name=document.getElementById('g-name').value.trim();
+  const target=parseFloat(document.getElementById('g-target').value);
+  if(!name||!target){toast('מלא שם וסכום','fail');return;}
+  await addDoc(userCol(viewUid,'goals'),{name,target,createdAt:serverTimestamp()});
+  document.getElementById('g-name').value='';
+  document.getElementById('g-target').value='';
   document.getElementById('goal-modal').classList.remove('open');
-  showToast('יעד נשמר! 🎯');
+  toast('יעד נשמר 🎯');
 };
 window.deleteGoal = async (id) => {
-  await deleteDoc(doc(db, `users/${user.uid}/goals`, id));
-  showToast('יעד נמחק');
+  await deleteDoc(doc(db,`users/${viewUid}/goals`,id));
+  toast('יעד נמחק');
 };
 
-// ── Filter ──
-window.setFilter = (f, el) => {
-  activeFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  renderTable();
-};
-
-// ── Stats ──
-function computeStats() {
-  let bank = 0, wallet = 0;
-  for (const t of transactions) {
-    const a = Math.abs(t.amount);
-    switch (t.type) {
-      case 'הכנסה':       wallet += a; break;
-      case 'הוצאה':       wallet -= a; break;
-      case 'איזון ארנק':  wallet += t.amount; break;
-      case 'הפקדה':       wallet -= a; bank += a; break;
-      case 'משיכה':       wallet += a; bank -= a; break;
-      case 'הכנסת בנק':   bank   += a; break;
-      case 'הוצאת בנק':   bank   -= a; break;
+// ── Compute stats ──
+function computeStats(){
+  let bank=0,wallet=0;
+  for(const t of transactions){
+    const a=Math.abs(t.amount);
+    switch(t.type){
+      case 'הכנסה':     wallet+=a; break;
+      case 'הוצאה':     wallet-=a; break;
+      case 'דמי כיס':   bank+=a; break;  // goes straight to bank
+      case 'איזון ארנק':wallet+=t.amount; break;
+      case 'הפקדה':     wallet-=a; bank+=a; break;
+      case 'משיכה':     wallet+=a; bank-=a; break;
+      case 'הכנסת בנק': bank+=a; break;
+      case 'הוצאת בנק': bank-=a; break;
     }
   }
-  const total = bank + wallet;
-  let earliest = new Date();
-  for (const t of transactions) { const d = new Date(t.date); if (d < earliest) earliest = d; }
-  const months  = Math.max(1, (Date.now() - earliest) / (1000*60*60*24*30.44));
-  const monthly = total / months;
-  document.getElementById('stat-total').textContent   = fmt(total);
-  document.getElementById('stat-bank').textContent    = fmt(Math.max(0, bank));
-  document.getElementById('stat-wallet').textContent  = fmt(Math.max(0, wallet));
-  document.getElementById('stat-monthly').textContent = fmt(monthly);
-  document.getElementById('stat-yearly').textContent  = fmt(monthly * 12) + ' לשנה';
-  document.getElementById('stat-since').textContent   = transactions.length ? 'מאז ' + earliest.toLocaleDateString('he-IL') : '';
-  return { bank, wallet, total, monthly };
+  const total=bank+wallet;
+  let earliest=new Date();
+  for(const t of transactions){const d=new Date(t.date);if(d<earliest)earliest=d;}
+  const months=Math.max(1,(Date.now()-earliest)/(1000*60*60*24*30.44));
+  const monthly=total/months;
+  document.getElementById('s-total').textContent=fmt(total);
+  document.getElementById('s-bank').textContent=fmt(Math.max(0,bank));
+  document.getElementById('s-wallet').textContent=fmt(Math.max(0,wallet));
+  document.getElementById('s-monthly').textContent=fmt(monthly);
+  document.getElementById('s-yearly').textContent=fmt(monthly*12)+' לשנה';
+  document.getElementById('s-since').textContent=transactions.length?'מאז '+earliest.toLocaleDateString('he-IL'):'';
+  return{bank,wallet,total,monthly};
 }
 
-// ── Table ──
-function renderTable() {
-  const rows = activeFilter === 'all' ? transactions
-    : transactions.filter(t => t.type === activeFilter);
-  const sorted = [...rows].sort((a,b) => new Date(b.date) - new Date(a.date));
-  const wrap = document.getElementById('tx-table-wrap');
-
-  if (!sorted.length) {
-    wrap.innerHTML = `<div class="empty-state"><div style="font-size:2.5rem;margin-bottom:10px">📭</div>אין פעולות</div>`;
-    return;
-  }
-  const badge = t => {
-    if (t.type==='הכנסה'||t.type==='הכנסת בנק') return 'b-in';
-    if (t.type==='הוצאה'||t.type==='הוצאת בנק') return 'b-out';
-    if (t.type==='הפקדה') return 'b-dep';
-    if (t.type==='משיכה') return 'b-wdraw';
+// ── Render table ──
+function renderTable(){
+  const rows=activeFilter==='all'?transactions:transactions.filter(t=>t.type===activeFilter);
+  const sorted=[...rows].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const wrap=document.getElementById('tx-wrap');
+  if(!sorted.length){wrap.innerHTML='<div class="empty">📭 אין פעולות</div>';return;}
+  const badgeCls=t=>{
+    if(t.type==='הכנסה'||t.type==='הכנסת בנק') return 'b-in';
+    if(t.type==='הוצאה'||t.type==='הוצאת בנק') return 'b-out';
+    if(t.type==='הפקדה') return 'b-dep';
+    if(t.type==='משיכה') return 'b-wd';
+    if(t.type==='דמי כיס') return 'b-allow';
     return 'b-bal';
   };
-  const amtCls = t => {
-    if (t.type==='הכנסה'||t.type==='הכנסת בנק') return 'a-in';
-    if (t.type==='הוצאה'||t.type==='הוצאת בנק') return 'a-out';
+  const amtCls=t=>{
+    if(t.type==='הכנסה'||t.type==='הכנסת בנק') return 'a-in';
+    if(t.type==='הוצאה'||t.type==='הוצאת בנק') return 'a-out';
+    if(t.type==='דמי כיס') return 'a-allow';
     return 'a-neu';
   };
-  const sign = t => (t.type==='הכנסה'||t.type==='הכנסת בנק') ? '+' : (t.type==='הוצאה'||t.type==='הוצאת בנק') ? '-' : '';
-
-  wrap.innerHTML = `<div style="overflow-x:auto"><table>
-    <thead><tr>
-      <th>תאריך</th><th>תיאור</th><th>סוג</th><th>קטגוריה</th><th>סכום</th><th></th>
-    </tr></thead>
+  const sign=t=>(t.type==='הכנסה'||t.type==='הכנסת בנק'||t.type==='דמי כיס')?'+':
+    (t.type==='הוצאה'||t.type==='הוצאת בנק')?'-':'';
+  const canDelete=viewUid===me.uid || me.role==='parent';
+  wrap.innerHTML=`<div style="overflow-x:auto"><table>
+    <thead><tr><th>תאריך</th><th>תיאור</th><th>סוג</th><th>קטגוריה</th><th>סכום</th>${canDelete?'<th></th>':''}</tr></thead>
     <tbody>${sorted.map(t=>`<tr>
-      <td style="color:var(--muted);font-size:.78rem;white-space:nowrap">${new Date(t.date).toLocaleDateString('he-IL')}</td>
+      <td style="color:var(--muted);font-size:.76rem;white-space:nowrap">${new Date(t.date).toLocaleDateString('he-IL')}</td>
       <td>${t.desc||'—'}</td>
-      <td><span class="tx-badge ${badge(t)}">${t.type}</span></td>
-      <td style="color:var(--muted);font-size:.8rem">${t.cat||'—'}</td>
+      <td><span class="badge ${badgeCls(t)}">${t.type}</span></td>
+      <td style="color:var(--muted);font-size:.78rem">${t.cat||'—'}</td>
       <td class="${amtCls(t)}">${sign(t)}${fmt(t.amount)}</td>
-      <td><button class="btn btn-danger btn-sm" style="padding:4px 8px" onclick="deleteTransaction('${t.id}')">✕</button></td>
-    </tr>`).join('')}
-    </tbody>
+      ${canDelete?`<td><button class="btn btn-red btn-sm" style="padding:3px 8px" onclick="deleteTransaction('${t.id}')">✕</button></td>`:''}
+    </tr>`).join('')}</tbody>
   </table></div>`;
 }
 
-// ── Goals ──
-function renderGoals() {
-  const { total } = computeStats();
-  const wrap = document.getElementById('goals-list');
-  if (!goals.length) {
-    wrap.innerHTML = `<div style="color:var(--muted);font-size:.85rem;text-align:center;padding:8px">אין יעדים עדיין</div>`;
-    return;
-  }
-  wrap.innerHTML = goals.map(g => {
-    const pct = Math.min(100, (total / g.target) * 100);
-    return `<div class="goal-item">
+// ── Render goals ──
+function renderGoals(){
+  const{total}=computeStats();
+  const wrap=document.getElementById('goals-list');
+  if(!goals.length){wrap.innerHTML='<div style="color:var(--muted);font-size:.82rem;text-align:center;padding:6px">אין יעדים עדיין</div>';return;}
+  wrap.innerHTML=goals.map(g=>{
+    const pct=Math.min(100,(total/g.target)*100);
+    return`<div class="goal-item">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="font-weight:600;font-size:.9rem">${g.name}</div>
-        <button class="btn btn-danger btn-sm" style="padding:3px 8px;font-size:.7rem" onclick="deleteGoal('${g.id}')">✕</button>
+        <div style="font-weight:600;font-size:.88rem">${g.name}</div>
+        ${me.role==='parent'&&viewUid===me.uid||viewUid===me.uid?`<button class="btn btn-red btn-sm" style="padding:2px 7px;font-size:.68rem" onclick="deleteGoal('${g.id}')">✕</button>`:''}
       </div>
       <div class="goal-bar"><div class="goal-fill" style="width:${pct}%"></div></div>
-      <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted)">
-        <span>${pct.toFixed(0)}% מהיעד</span>
-        <span>נשאר ${fmt(Math.max(0, g.target - total))}</span>
+      <div style="display:flex;justify-content:space-between;font-size:.73rem;color:var(--muted)">
+        <span>${pct.toFixed(0)}% מהיעד</span><span>נשאר ${fmt(Math.max(0,g.target-total))}</span>
       </div>
-      <div style="font-size:.72rem;color:var(--muted);margin-top:2px">יעד: ${fmt(g.target)}</div>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:1px">יעד: ${fmt(g.target)}</div>
     </div>`;
   }).join('');
 }
 
-// ── Chart ──
-function renderChart() {
-  const now = new Date();
-  const months = Array.from({length:6}, (_,i) => {
-    const d = new Date(now.getFullYear(), now.getMonth() - (5-i), 1);
-    return { label: d.toLocaleDateString('he-IL',{month:'short'}), y:d.getFullYear(), m:d.getMonth(), inc:0, exp:0 };
+// ── Render chart ──
+function renderChart(){
+  const now=new Date();
+  const months=Array.from({length:6},(_,i)=>{
+    const d=new Date(now.getFullYear(),now.getMonth()-(5-i),1);
+    return{label:d.toLocaleDateString('he-IL',{month:'short'}),y:d.getFullYear(),m:d.getMonth(),inc:0,exp:0};
   });
-  for (const t of transactions) {
-    const d = new Date(t.date);
-    const slot = months.find(x => x.y===d.getFullYear() && x.m===d.getMonth());
-    if (!slot) continue;
-    if (t.type==='הכנסה'||t.type==='הכנסת בנק') slot.inc += Math.abs(t.amount);
-    else if (t.type==='הוצאה'||t.type==='הוצאת בנק') slot.exp += Math.abs(t.amount);
+  for(const t of transactions){
+    const d=new Date(t.date);
+    const sl=months.find(x=>x.y===d.getFullYear()&&x.m===d.getMonth());
+    if(!sl) continue;
+    if(t.type==='הכנסה'||t.type==='הכנסת בנק'||t.type==='דמי כיס') sl.inc+=Math.abs(t.amount);
+    else if(t.type==='הוצאה'||t.type==='הוצאת בנק') sl.exp+=Math.abs(t.amount);
   }
-  const maxV = Math.max(1, ...months.map(m => Math.max(m.inc, m.exp)));
-  document.getElementById('chart-area').innerHTML = `
-    <div style="display:flex;gap:10px;align-items:flex-end;height:110px">
-      ${months.map(m=>`
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
-          <div style="width:100%;display:flex;gap:3px;align-items:flex-end;height:90px">
-            <div title="הכנסות ${fmt(m.inc)}" style="flex:1;border-radius:4px 4px 0 0;background:var(--green);opacity:.8;height:${(m.inc/maxV*88)}px;min-height:${m.inc>0?3:0}px"></div>
-            <div title="הוצאות ${fmt(m.exp)}" style="flex:1;border-radius:4px 4px 0 0;background:var(--red);opacity:.8;height:${(m.exp/maxV*88)}px;min-height:${m.exp>0?3:0}px"></div>
-          </div>
-          <div style="font-size:.65rem;color:var(--muted);text-align:center">${m.label}</div>
-        </div>`).join('')}
+  const maxV=Math.max(1,...months.map(m=>Math.max(m.inc,m.exp)));
+  document.getElementById('chart-area').innerHTML=`
+    <div style="display:flex;gap:10px;align-items:flex-end;height:110px;padding:0 4px">
+      ${months.map(m=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+        <div style="width:100%;display:flex;gap:3px;align-items:flex-end;height:90px">
+          <div title="הכנסות ${fmt(m.inc)}" style="flex:1;border-radius:4px 4px 0 0;background:var(--green);opacity:.8;height:${(m.inc/maxV*88)}px;min-height:${m.inc>0?3:0}px"></div>
+          <div title="הוצאות ${fmt(m.exp)}" style="flex:1;border-radius:4px 4px 0 0;background:var(--red);opacity:.8;height:${(m.exp/maxV*88)}px;min-height:${m.exp>0?3:0}px"></div>
+        </div>
+        <div style="font-size:.62rem;color:var(--muted);text-align:center">${m.label}</div>
+      </div>`).join('')}
     </div>
-    <div style="display:flex;gap:16px;padding:8px 0 0;font-size:.75rem;color:var(--muted)">
-      <span><span style="display:inline-block;width:8px;height:8px;background:var(--green);border-radius:2px;margin-left:5px"></span>הכנסות</span>
-      <span><span style="display:inline-block;width:8px;height:8px;background:var(--red);border-radius:2px;margin-left:5px"></span>הוצאות</span>
+    <div style="display:flex;gap:14px;padding:6px 4px 0;font-size:.72rem;color:var(--muted)">
+      <span><span style="display:inline-block;width:8px;height:8px;background:var(--green);border-radius:2px;margin-left:4px"></span>הכנסות</span>
+      <span><span style="display:inline-block;width:8px;height:8px;background:var(--red);border-radius:2px;margin-left:4px"></span>הוצאות</span>
     </div>`;
 }
 
-// ── Auth listener ──
-onAuthStateChanged(auth, (u) => {
-  user = u;
-  if (u) {
-    document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    document.getElementById('nav-user-name').textContent = u.displayName || u.email;
-    document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
-
-    if (unsubTx) unsubTx();
-    unsubTx = onSnapshot(
-      query(userCol('transactions'), orderBy('createdAt', 'desc')),
-      snap => {
-        transactions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        computeStats(); renderTable(); renderGoals(); renderChart();
-      }
-    );
-
-    if (unsubGoals) unsubGoals();
-    unsubGoals = onSnapshot(userCol('goals'), snap => {
-      goals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderGoals();
-    });
+// ── Auth state listener ──
+onAuthStateChanged(auth, async (u) => {
+  if(!u){
+    me=null;
+    showScreen('s-auth');
+    return;
+  }
+  // Load user profile
+  const snap=await getDoc(userDoc(u.uid));
+  if(!snap.exists()){
+    // Shouldn't happen, but fallback
+    me={uid:u.uid,email:u.email,name:u.displayName||u.email,role:'child',parentUid:null,children:[]};
   } else {
-    document.getElementById('auth-screen').style.display = 'flex';
-    document.getElementById('app').style.display = 'none';
-    transactions = []; goals = [];
+    me={uid:u.uid,...snap.data()};
+  }
+
+  if(me.role==='parent'){
+    // Check if has pending requests (show s-requests) or go straight to app
+    const q=query(collection(db,'connectionRequests'),where('parentUid','==',me.uid),where('status','==','pending'));
+    const pendingSnap=await getDocs(q);
+    // Always launch app; show banner if pending
+    await launchApp();
+    if(!pendingSnap.empty){
+      document.getElementById('pending-banner').style.display='flex';
+      document.getElementById('pending-banner-sub').textContent=`${pendingSnap.size} בקשה ממתינה לאישור`;
+    }
+  } else {
+    // Child
+    if(!me.parentUid){
+      // Check for existing pending request
+      const q=query(collection(db,'connectionRequests'),where('childUid','==',me.uid),where('status','==','pending'));
+      const reqSnap=await getDocs(q);
+      if(!reqSnap.empty){
+        showScreen('s-waiting');
+        document.getElementById('waiting-msg').textContent='בקשת החיבור נשלחה. ממתין לאישור ההורה...';
+      } else {
+        showScreen('s-link');
+      }
+    } else {
+      await launchApp();
+    }
   }
 });
 </script>
