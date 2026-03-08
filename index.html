@@ -971,37 +971,39 @@ onAuthStateChanged(auth, async (u) => {
   // Load user profile
   const snap=await getDoc(userDoc(u.uid));
   if(!snap.exists()){
-    // Shouldn't happen, but fallback
-    me={uid:u.uid,email:u.email,name:u.displayName||u.email,role:'child',parentUid:null,children:[]};
+    // Profile missing — treat as parent (safe default that goes straight to app)
+    me={uid:u.uid,email:u.email,name:u.displayName||u.email,role:'parent',parentUid:null,children:[]};
+    await setDoc(userDoc(u.uid), me, {merge:true});
   } else {
     me={uid:u.uid,...snap.data()};
   }
 
+  // PARENT → always go straight to app, no linking needed
   if(me.role==='parent'){
-    // Check if has pending requests (show s-requests) or go straight to app
+    await launchApp();
+    // Check pending requests in background
     const q=query(collection(db,'connectionRequests'),where('parentUid','==',me.uid),where('status','==','pending'));
     const pendingSnap=await getDocs(q);
-    // Always launch app; show banner if pending
-    await launchApp();
     if(!pendingSnap.empty){
       document.getElementById('pending-banner').style.display='flex';
       document.getElementById('pending-banner-sub').textContent=`${pendingSnap.size} בקשה ממתינה לאישור`;
     }
-  } else {
-    // Child
-    if(!me.parentUid){
-      // Check for existing pending request
-      const q=query(collection(db,'connectionRequests'),where('childUid','==',me.uid),where('status','==','pending'));
-      const reqSnap=await getDocs(q);
-      if(!reqSnap.empty){
-        showScreen('s-waiting');
-        document.getElementById('waiting-msg').textContent='בקשת החיבור נשלחה. ממתין לאישור ההורה...';
-      } else {
-        showScreen('s-link');
-      }
+    return;
+  }
+
+  // CHILD → needs parent link
+  if(!me.parentUid){
+    // Check for existing pending request
+    const q=query(collection(db,'connectionRequests'),where('childUid','==',me.uid),where('status','==','pending'));
+    const reqSnap=await getDocs(q);
+    if(!reqSnap.empty){
+      showScreen('s-waiting');
+      document.getElementById('waiting-msg').textContent='בקשת החיבור נשלחה. ממתין לאישור ההורה...';
     } else {
-      await launchApp();
+      showScreen('s-link');
     }
+  } else {
+    await launchApp();
   }
 });
 </script>
